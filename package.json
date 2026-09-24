@@ -1,0 +1,22 @@
+{
+  "name": "digimon-game8-scraper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Scraper de Digivolutions do Game8 para os dados de Digimon.",
+  "scripts": {
+    "scrape": "node src/scrape-digimon.js",
+    "cli": "node src/cli.js",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}
