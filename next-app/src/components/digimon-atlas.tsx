@@ -7,8 +7,14 @@ import { DigimonCard } from './digimon-card';
 import { DigimonProvider } from './digimon-context';
 import { readFavorites, saveFavorites } from './lib/favorites';
 import { ScrollToTop } from './scroll-to-top';
+import type {Digimon} from '@/types/DigimonTypes'
 
-export default function DigimonAtlas({ digimons, loadError = '' }) {
+interface DigimonAtlasProps {
+  digimons: Digimon[];
+  loadError?: string;
+}
+
+export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasProps) {
   const [query, setQuery] = useState('');
   const [showFavorites, setShowFavorites] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState(() => new Set());

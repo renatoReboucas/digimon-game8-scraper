@@ -6,7 +6,7 @@ import { useId, useState } from 'react';
 import { DigimonImage } from './digimon-image';
 import { DigimonMetadataGrid, hasValue } from './digimon-metadata-grid';
 import { useDigimonLookup } from './digimon-context';
-import { Game8Link } from './game8-link';
+import { Link } from './link';
 
 const KNOWN_KEYS = new Set([
   'id',
@@ -104,7 +104,7 @@ export function RelatedItem({ item, onSelectParent }) {
           </div>
         </div>
         <div className="related-actions">
-          {hasValue(digimon.url) && <Game8Link item={digimon} />}
+          {hasValue(digimon.url) && <Link item={digimon} />}
           <button
             className="parent-filter-button"
             type="button"
