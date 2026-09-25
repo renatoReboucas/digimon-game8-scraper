@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import { ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, Star } from 'lucide-react';
 import { DigimonImage } from './digimon-image';
 import { EvolutionSection } from './evolution-section';
 import { Game8Link } from './game8-link';
@@ -36,6 +36,19 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
           </div>
         </div>
         <div className="card-actions">
+          <button
+            className="search-parent-button"
+            type="button"
+            title={`Pesquisar ${item.name} na busca`}
+            aria-label={`Pesquisar ${item.name} na barra de busca`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelectParent?.(item.name);
+            }}
+          >
+            <Search aria-hidden="true" size={15} strokeWidth={1.8} />
+            <span>Buscar</span>
+          </button>
           <button
             className={`favorite-button${isFavorite ? ' is-favorite' : ''}`}
             type="button"

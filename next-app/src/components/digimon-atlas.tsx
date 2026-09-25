@@ -46,6 +46,15 @@ export default function DigimonAtlas({ digimons, loadError = '' }) {
     setSelectedParentId(null);
     setShowFavorites(false);
     setQuery(name || '');
+    if (typeof window !== 'undefined') {
+      requestAnimationFrame(() => {
+        const input = document.getElementById('search-input');
+        if (input) {
+          input.focus();
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    }
   }
 
   const favoriteCount = digimons.filter((item) => favoriteIds.has(String(item.id))).length;

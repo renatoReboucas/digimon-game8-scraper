@@ -232,7 +232,8 @@ h1 {
 
 .game8-link,
 .favorite-button,
-.parent-filter-button {
+.parent-filter-button,
+.search-parent-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -250,6 +251,17 @@ h1 {
 
 .game8-link {
   gap: 5px;
+}
+
+.search-parent-button {
+  gap: 6px;
+  color: var(--accent);
+}
+
+.search-parent-button:hover {
+  border-color: var(--accent);
+  background: rgba(98, 214, 178, .12);
+  color: var(--accent-strong);
 }
 
 .game8-link:hover,
@@ -675,6 +687,12 @@ h1 {
 
   .related-metadata-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .search-parent-button {
+    gap: 4px;
+    padding: 6px 8px;
+    font-size: .68rem;
   }
 
   .related-expanded-details {
