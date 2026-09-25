@@ -323,14 +323,34 @@ h1 {
 .card-meta-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 0 18px 15px 18px;
+  gap: 8px;
+  padding: 0 18px 12px 18px;
 }
 
 .parent-metadata-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 5px;
+}
+
+.parent-metadata-grid .metadata-item {
+  padding: 3px 6px;
+  gap: 1px;
+  border-radius: 3px;
+  background: rgba(18, 26, 38, .5);
+  border: 1px solid rgba(43, 59, 79, .6);
+}
+
+.parent-metadata-grid .metadata-label {
+  font-size: .56rem;
+  letter-spacing: .02em;
+  color: var(--muted);
+}
+
+.parent-metadata-grid .metadata-value {
+  font-size: .68rem;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .card-meta-footer {
@@ -731,7 +751,25 @@ h1 {
   }
 
   .card-meta-section {
-    padding: 0 12px 13px 12px;
+    padding: 0 12px 10px 12px;
+    gap: 6px;
+  }
+
+  .parent-metadata-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 4px;
+  }
+
+  .parent-metadata-grid .metadata-item {
+    padding: 2px 5px;
+  }
+
+  .parent-metadata-grid .metadata-label {
+    font-size: .52rem;
+  }
+
+  .parent-metadata-grid .metadata-value {
+    font-size: .64rem;
   }
 
   .card-meta {
