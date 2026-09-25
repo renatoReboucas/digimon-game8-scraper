@@ -4,6 +4,7 @@
 import { Search, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { DigimonCard } from './digimon-card';
+import { DigimonProvider } from './digimon-context';
 import { readFavorites, saveFavorites } from './lib/favorites';
 
 export default function DigimonAtlas({ digimons, loadError = '' }) {
@@ -57,60 +58,62 @@ export default function DigimonAtlas({ digimons, loadError = '' }) {
         : 'Nenhum Digimon disponivel.';
 
   return (
-    <main className="shell">
-      <header className="hero">
-        <p className="eyebrow">Digimon Story Time Stranger</p>
-        <h1>Digimon Atlas</h1>
-        <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
-        <label className="search-box" htmlFor="search-input">
-          <Search aria-hidden="true" size={18} strokeWidth={1.8} />
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Pesquisar por nome..."
-            autoComplete="off"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          {query && (
-            <button
-              className="search-clear"
-              type="button"
-              title="Limpar pesquisa"
-              aria-label="Limpar pesquisa"
-              onClick={() => setQuery('')}
-            >
-              <X aria-hidden="true" size={16} strokeWidth={2} />
-            </button>
-          )}
-        </label>
-        <label className="favorites-filter" htmlFor="favorites-toggle">
-          <input
-            id="favorites-toggle"
-            type="checkbox"
-            checked={showFavorites}
-            onChange={(event) => setShowFavorites(event.target.checked)}
-          />
-          <span>Apenas favoritos</span>
-        </label>
-        <p className="result-count" aria-live="polite">
-          {loadError || `${filtered.length} ${filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'} · ${favoriteCount} favoritos`}
-        </p>
-      </header>
-      <section className="digimon-list" aria-live="polite">
-        {!loadError && !filtered.length ? <p className="page-empty">{emptyMessage}</p> : null}
-        {!loadError && filtered.map((item) => (
-          <DigimonCard
-            key={item.id}
-            item={item}
-            isFavorite={favoriteIds.has(String(item.id))}
-            isExpanded={expandedIds.has(item.id)}
-            onToggleFavorite={toggleFavorite}
-            onToggleExpanded={toggleExpanded}
-            onSelectParent={selectParent}
-          />
-        ))}
-      </section>
-    </main>
+    <DigimonProvider digimons={digimons}>
+      <main className="shell">
+        <header className="hero">
+          <p className="eyebrow">Digimon Story Time Stranger</p>
+          <h1>Digimon Atlas</h1>
+          <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
+          <label className="search-box" htmlFor="search-input">
+            <Search aria-hidden="true" size={18} strokeWidth={1.8} />
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Pesquisar por nome..."
+              autoComplete="off"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            {query && (
+              <button
+                className="search-clear"
+                type="button"
+                title="Limpar pesquisa"
+                aria-label="Limpar pesquisa"
+                onClick={() => setQuery('')}
+              >
+                <X aria-hidden="true" size={16} strokeWidth={2} />
+              </button>
+            )}
+          </label>
+          <label className="favorites-filter" htmlFor="favorites-toggle">
+            <input
+              id="favorites-toggle"
+              type="checkbox"
+              checked={showFavorites}
+              onChange={(event) => setShowFavorites(event.target.checked)}
+            />
+            <span>Apenas favoritos</span>
+          </label>
+          <p className="result-count" aria-live="polite">
+            {loadError || `${filtered.length} ${filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'} · ${favoriteCount} favoritos`}
+          </p>
+        </header>
+        <section className="digimon-list" aria-live="polite">
+          {!loadError && !filtered.length ? <p className="page-empty">{emptyMessage}</p> : null}
+          {!loadError && filtered.map((item) => (
+            <DigimonCard
+              key={item.id}
+              item={item}
+              isFavorite={favoriteIds.has(String(item.id))}
+              isExpanded={expandedIds.has(item.id)}
+              onToggleFavorite={toggleFavorite}
+              onToggleExpanded={toggleExpanded}
+              onSelectParent={selectParent}
+            />
+          ))}
+        </section>
+      </main>
+    </DigimonProvider>
   );
 }
