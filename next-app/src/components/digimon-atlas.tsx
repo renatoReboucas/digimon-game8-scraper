@@ -41,11 +41,10 @@ export default function DigimonAtlas({ digimons, loadError = '' }) {
     setExpandedIds(next);
   }
 
-  function selectParent(id) {
-    const parent = digimons.find((item) => String(item.id) === String(id));
+  function selectParent(name) {
     setSelectedParentId(null);
     setShowFavorites(false);
-    setQuery(parent?.name || '');
+    setQuery(name || '');
   }
 
   const favoriteCount = digimons.filter((item) => favoriteIds.has(String(item.id))).length;

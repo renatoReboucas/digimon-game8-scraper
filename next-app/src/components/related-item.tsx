@@ -18,7 +18,7 @@ export function RelatedItem({ item, onSelectParent }) {
             type="button"
             title="Filtrar pelo card pai"
             aria-label={`Filtrar pelo card pai de ${item.name}`}
-            onClick={() => onSelectParent(item.id)}
+            onClick={() => onSelectParent(item.name)}
           >
             <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
             Filtrar
