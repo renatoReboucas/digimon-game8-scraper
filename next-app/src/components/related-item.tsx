@@ -123,7 +123,6 @@ export function RelatedItem({ item, onSelectParent }) {
             }}
           >
             <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
-            Filtrar
           </button>
           <button
             className={`related-expand-toggle${isExpanded ? ' is-expanded' : ''}`}
