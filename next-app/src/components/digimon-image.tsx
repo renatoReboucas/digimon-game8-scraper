@@ -18,7 +18,7 @@ export function DigimonImage({ item, className }: DigimonImageProps) {
   return (
     <img
       className={className}
-      src={source}
+      src={source || undefined}
       alt={item.name || 'Digimon'}
       loading="lazy"
       onError={() => {

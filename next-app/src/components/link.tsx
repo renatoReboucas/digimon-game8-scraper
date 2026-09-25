@@ -13,7 +13,14 @@ export function Link({ item }: LinkProps) {
   const href = `${WIKI_URL}/${encodeURIComponent((item.name ?? '').toLowerCase())}`
 
   return (
-    <a className="game8-link" href={href} target="_blank" rel="noreferrer" title="Abrir no grindosaur">
+    <a
+      className="game8-link"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      title="Abrir no grindosaur"
+      aria-label={`Abrir ${item.name ?? 'Digimon'} no Grindosaur`}
+    >
       <SquareArrowOutUpRight aria-hidden="true" size={15} strokeWidth={1.8} />
     </a>
   )

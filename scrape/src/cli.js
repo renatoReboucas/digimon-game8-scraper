@@ -35,8 +35,9 @@ async function deleteOutput(rl, inputFile, outputFile) {
     return;
   }
 
-  const confirmation = await rl.question(`Para confirmar, digite ${OUTPUT_FILE}: `);
-  if (confirmation.toLowerCase() !== OUTPUT_FILE.toLowerCase()) {
+  const outputName = path.basename(OUTPUT_FILE);
+  const confirmation = await rl.question(`Para confirmar, digite ${outputName}: `);
+  if (confirmation.toLowerCase() !== outputName.toLowerCase()) {
     console.log('Exclusao cancelada.');
     return;
   }

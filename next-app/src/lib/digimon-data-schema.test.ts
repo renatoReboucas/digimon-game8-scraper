@@ -41,4 +41,32 @@ describe('parseDigimonData', () => {
       collectionArraySchema: { collectionItems: [{ name: 42 }] },
     })).toThrow('cada item de collectionItems deve ser um Digimon valido')
   })
+
+  it('accepts nullable IDs and structured optional fields and evolution variants', () => {
+    const item = {
+      id: null,
+      name: null,
+      fields: [{ name: null }],
+      skills: [{ name: null, skillName: null, description: null, desc: null }],
+      Digivolutions: { evolutions: ['Agumon', { id: 0, name: null }], deEvolutions: [] },
+      nextEvolutions: [{ id: 1, url: null }],
+    }
+
+    expect(parseDigimonData({ collectionArraySchema: { collectionItems: [item] } })).toEqual([item])
+  })
+
+  it('rejects malformed IDs, fields, skills and evolution references', () => {
+    const invalidItems = [
+      { id: true },
+      { fields: [{ name: 42 }] },
+      { skills: [{ description: 42 }] },
+      { Digivolutions: { evolutions: [42] } },
+      { evolutions: [{ id: {} }] },
+    ]
+
+    for (const item of invalidItems) {
+      expect(() => parseDigimonData({ collectionArraySchema: { collectionItems: [item] } }))
+        .toThrow('cada item de collectionItems deve ser um Digimon valido')
+    }
+  })
 })

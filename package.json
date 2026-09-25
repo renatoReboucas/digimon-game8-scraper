@@ -7,7 +7,9 @@
   "scripts": {
     "scrape": "node scrape/src/scrape-digimon.js",
     "cli": "node scrape/src/cli.js",
-    "test": "vitest run scrape/test",
+    "test": "npm run test:all",
+    "test:all": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "next:dev": "npm --prefix next-app run dev",
     "next:build": "npm --prefix next-app run build",
     "next:start": "npm --prefix next-app run start"
@@ -20,6 +22,9 @@
     "cheerio": "^1.0.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/coverage-v8": "^5.0.2",
+    "jsdom": "^30.1.1",
     "vitest": "^5.0.1"
   }
 }

@@ -51,11 +51,11 @@ O menu usa esta ordem:
 
 A exclusão exige a digitação exata de `digimon-enriched.json`. O arquivo de entrada nunca é apagado.
 
-`Recomecar scraping do zero` exige a digitação exata de `RECOMECAR`, sem diferenciar maiusculas e minusculas. Com a confirmacao correta, a CLI remove `scrape/digimon-enriched.json`, `scrape/.cache/scrape-cache.json` e as imagens baixadas em `scrape/src/images/`, preservando `.gitkeep` e `scrape/digimon.json`. Em seguida, inicia automaticamente uma nova captura. Confirmacoes diferentes cancelam a operacao sem remover arquivos.
+`Recomecar scraping do zero` exige a confirmacao `s` ou `sim`, sem diferenciar maiusculas e minusculas. Com a confirmacao correta, a CLI remove `scrape/digimon-enriched.json`, `scrape/.cache/scrape-cache.json` e as imagens baixadas em `scrape/src/images/`, preservando `.gitkeep` e `scrape/digimon.json`. Em seguida, inicia automaticamente uma nova captura. Confirmacoes diferentes cancelam a operacao sem remover arquivos.
 
-Durante a captura, a CLI informa a criação das pastas `scrape/.cache` e `scrape/src/images`, as páginas processadas, as imagens baixadas ou reutilizadas e o cache salvo. A interface web é aberta depois da captura concluída e exibe os dados gerados.
+Durante a captura, a CLI informa a criação das pastas `scrape/.cache` e `scrape/src/images`, as páginas processadas, as imagens baixadas ou reutilizadas e o cache salvo. A captura não inicia o servidor web automaticamente.
 
-Depois de capturar os dados, escolha `Abrir servidor web` e acesse `http://127.0.0.1:3000`. A interface oferece busca reativa por nome, cards expansíveis com evolutions e de-evolutions, imagens locais e botões para abrir cada página do Game8 em uma nova aba. Cada Digimon pode ser favoritado ou desfavoritado; os favoritos ficam salvos no `localStorage` do navegador e podem ser filtrados pelo toggle `Apenas favoritos`. O botão `Somente pais` em cada card oculta os Digimons que aparecem como filhos nas relações e pode ser combinado com busca e favoritos. Encerre o servidor com `Ctrl+C`.
+Depois de capturar os dados, escolha `Abrir servidor web` e acesse `http://127.0.0.1:3000`. A interface oferece busca reativa por nome, cards expansíveis com evolutions e de-evolutions, imagens locais e botões para abrir cada página do Game8 em uma nova aba. Cada Digimon pode ser favoritado ou desfavoritado; os favoritos ficam salvos no `localStorage` do navegador e podem ser filtrados pelo toggle `Apenas favoritos`. O botão de filtro em uma relação busca o Digimon pai pelo nome. Encerre o servidor com `Ctrl+C`.
 
 Para executar diretamente:
 
@@ -104,10 +104,103 @@ O programa não tenta contornar CAPTCHA, autenticação, rate limits ou controle
 
 O código de produção fica em `scrape/src/`, os testes ficam em `scrape/test/`, os dados ficam em `scrape/` e as imagens baixadas ficam em `scrape/src/images/`. A pasta de imagens não é ignorada pelo Git.
 
-## Testes
+## Mapa funcional
+
+| Área | Funcionalidades mapeadas | Suítes/cenários |
+|---|---|---|
+| Scraper | Leitura do JSON, extração/deduplicação de evolutions e de-evolutions, cache incremental, concorrência, retentativas, `Retry-After`, download/reuso de imagens e fallback remoto | `scrape/test/scrape-digimon.test.js`, `scrape/test/argument-parsing.test.js` |
+| CLI | Capturar, validar sobrescrita, excluir output com confirmação, reiniciar preservando entrada e `.gitkeep`, abrir servidor, cancelar e tratar falhas | `scrape/test/cli-interactions.test.js`, cenários existentes em `scrape/test/scrape-digimon.test.js` |
+| Web legada | Carga da API, busca reativa, favoritos/localStorage, filtro de favoritos, filtro pelo nome do pai, expansão por clique/teclado, links, imagens, vazios e erros | `scrape/test/web-app.test.js`, `scrape/test/favorites.test.js` |
+| Servidor legado | `/`, `/api/digimons`, assets estáticos e imagens, MIME types, 404/405, validação dos dados e falha ao ocupar a porta | `scrape/test/web-server.test.js` |
+| Catálogo Next | Carga server-side, validação de schema, busca sincronizada com `q` na URL, favoritos, filtro, expansão de relações, metadados, imagens e links externos | `next-app/src/app/*test*`, `next-app/src/components/*test*`, `next-app/src/lib/*test*` |
+| API Next | `GET /api/digimons`, resposta JSON válida e respostas de erro | `next-app/src/app/api/digimons/route.test.ts` |
+
+## Componentes Next
+
+Todos os componentes `.tsx` fora de `next-app/src/components/ui/` têm cenários com React Testing Library. A lista encontrada e a cobertura de comportamento são:
+
+| Componente | Comportamentos exercitados |
+|---|---|
+| `DigimonAtlas` | Render inicial, busca/URL, limpeza, favoritos persistidos, filtro, empty states, erro e axe |
+| `DigimonCard` | Expansão/recolhimento, clique no card, favorito, filtro pelo nome e relações |
+| `DigimonProvider` / `useDigimonLookup` | Busca por nome, URL e ID, dados esparsos e catálogo vazio |
+| `DigimonImage` | Imagem local/remota, fallback após erro e ausência de `src` vazio |
+| `DigimonMetadataGrid` | Campos opcionais, nível/geração e aliases de data |
+| `EvolutionSection` | Lista de referências e estado sem registros |
+| `RelatedItem` | Expansão, metadata, fields, skills, relações e filtro por pai |
+| `Link` | URL codificada, destino seguro e nome acessível |
+| `Game8Link` | URL fornecida/fallback, nova aba e nome acessível |
+| `ScrollToTop` | Estado antes/depois do limite de rolagem e ação de retornar ao topo |
+
+Os Server Components elegíveis também são renderizados/verificados com React Testing Library:
+
+| Server Component | Cenários |
+|---|---|
+| `HomePage` | Catálogo válido, vazio e falha real de leitura do arquivo |
+| `RootLayout` | Idioma `pt-BR`, metadata, providers e composição dos filhos |
+| `Loading` | Mensagem `role="status"` e `aria-busy` durante carregamento |
+
+`components/ui/` é a única pasta de componentes ignorada, conforme o escopo. Seus controles são usados como dependências nas renderizações e auditorias dos componentes consumidores, mas não têm suites unitárias próprias.
+
+## Acessibilidade
+
+As consultas RTL priorizam roles, labels e nomes acessíveis. Os testes verificam headings, labels, links, estados `aria-expanded`/`aria-pressed`, switch, status de carregamento e interações por teclado. O axe-core encontrou zero violações nas regras habilitadas para a renderização inicial do catálogo.
+
+O teste axe desabilita somente `color-contrast`: jsdom não implementa canvas, necessário para essa regra. Contraste visual permanece sem verificação automatizada neste ambiente. Os links de ícone receberam `aria-label`; imagens sem URL deixaram de emitir `src=""`. Essas são as alterações de produção feitas para acessibilidade/testabilidade. A confirmação de exclusão da CLI também foi alinhada ao nome do arquivo documentado.
+
+## Executar testes e cobertura
 
 ```bash
-npm test
+npm run test:all
+npm run test:coverage
 ```
 
-Os testes usam Vitest.
+`npm test` é um alias de `npm run test:all`. O comando do pacote Next (`npm --prefix next-app test`) também executa a suíte conjunta. Todos os testes usam Vitest; não há Jest.
+
+`npm run test:coverage` gera o relatório HTML em `coverage/monorepo/index.html` e o resumo JSON em `coverage/monorepo/coverage-summary.json`. A configuração falha se Statements, Branches, Functions ou Lines ficar abaixo de 80%. O denominador cobre `scrape/src` e `next-app/src`, excluindo arquivos de teste, `next-app/src/test/`, tipos sem runtime e componentes `next-app/src/components/ui/`.
+
+### Cobertura global observada
+
+Relatório gerado em 2026-09-25, com 18 arquivos de teste e 93 testes aprovados:
+
+| Métrica | Cobertura | Meta | Resultado |
+|---|---:|---:|---|
+| Statements | 89,63% (778/868) | 80% | Aprovada |
+| Branches | 82,67% (568/687) | 80% | Aprovada |
+| Functions | 91,90% (159/173) | 80% | Aprovada |
+| Lines | 91,88% (725/789) | 80% | Aprovada |
+
+### Cobertura por arquivo
+
+| Arquivo de produção | Statements | Branches | Functions | Lines |
+|---|---:|---:|---:|---:|
+| `next-app/src/app/layout.tsx` | 100% | 100% | 100% | 100% |
+| `next-app/src/app/loading.tsx` | 100% | 100% | 100% | 100% |
+| `next-app/src/app/page.tsx` | 100% | 50% | 100% | 100% |
+| `next-app/src/app/api/digimons/route.ts` | 100% | 100% | 100% | 100% |
+| `next-app/src/components/digimon-atlas.tsx` | 90,56% | 73,68% | 93,75% | 93,75% |
+| `next-app/src/components/digimon-card.tsx` | 94,11% | 78,57% | 100% | 100% |
+| `next-app/src/components/digimon-context.tsx` | 94,87% | 84% | 100% | 100% |
+| `next-app/src/components/digimon-image.tsx` | 100% | 81,81% | 100% | 100% |
+| `next-app/src/components/digimon-metadata-grid.tsx` | 100% | 93,93% | 100% | 100% |
+| `next-app/src/components/evolution-section.tsx` | 100% | 87,50% | 100% | 100% |
+| `next-app/src/components/game8-link.tsx` | 100% | 100% | 100% | 100% |
+| `next-app/src/components/link.tsx` | 100% | 100% | 100% | 100% |
+| `next-app/src/components/related-item.tsx` | 84,90% | 84,87% | 80% | 87,75% |
+| `next-app/src/components/scroll-to-top.tsx` | 100% | 100% | 100% | 100% |
+| `next-app/src/components/lib/favorites.ts` | 100% | 100% | 100% | 100% |
+| `next-app/src/lib/digimon-data-schema.ts` | 93,93% | 95,45% | 100% | 100% |
+| `next-app/src/lib/digimon-data.ts` | 100% | 50% | 100% | 100% |
+| `next-app/src/lib/digimon-search.ts` | 100% | 100% | 100% | 100% |
+| `next-app/src/lib/utils.ts` | 100% | 100% | 100% | 100% |
+| `scrape/src/cli.js` | 88,63% | 87,03% | 87,50% | 89,28% |
+| `scrape/src/scrape-digimon.js` | 80% | 70,73% | 85,10% | 83,98% |
+| `scrape/src/web-server.js` | 85,41% | 90,90% | 77,77% | 85,41% |
+| `scrape/src/web/app.js` | 98,82% | 81,25% | 100% | 98,76% |
+| `scrape/src/web/favorites.js` | 100% | 100% | 100% | 100% |
+
+### Melhorias futuras
+
+- Os fluxos alternativos de branches em `DigimonAtlas`, `DigimonCard`, `HomePage`, `loadDigimonData` e `scrape-digimon.js` ainda têm caminhos não exercitados, embora a cobertura global supere as metas.
+- `color-contrast` deve ser verificado em navegador real, pois o ambiente jsdom não oferece canvas.
+- Considerar separar os testes de integração DOM legada dos testes de módulos do scraper caso a interface antiga volte a evoluir; hoje ambos permanecem no mesmo Vitest conforme solicitado.

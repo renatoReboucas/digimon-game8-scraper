@@ -405,7 +405,7 @@ export async function runScrape({
   return { output, count: enrichedItems.length, durationMs };
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const options = { input: DEFAULT_INPUT, output: DEFAULT_OUTPUT, minDelay: 2500, maxDelay: 5000, concurrency: 3, force: false };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
