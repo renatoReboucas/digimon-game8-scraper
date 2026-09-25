@@ -256,10 +256,10 @@ export function RelatedItem({ item, onSelectParent }) {
               </div>
             )}
 
-            {/* Prior Evolutions */}
+            {/* De-evolutions */}
             {hasValue(priorEvolutions) && (
               <div className="related-detail-section">
-                <span className="related-section-title">Prior Evolutions</span>
+                <span className="related-section-title">De-evolutions</span>
                 <div className="related-badges-list">
                   {priorEvolutions.map((evo, idx) => {
                     const evoObj = typeof evo === 'object' && evo !== null ? evo : { name: evo };
@@ -289,10 +289,10 @@ export function RelatedItem({ item, onSelectParent }) {
               </div>
             )}
 
-            {/* Next Evolutions */}
+            {/* Evolutions */}
             {hasValue(nextEvolutions) && (
               <div className="related-detail-section">
-                <span className="related-section-title">Next Evolutions</span>
+                <span className="related-section-title">Evolutions</span>
                 <div className="related-badges-list">
                   {nextEvolutions.map((evo, idx) => {
                     const evoObj = typeof evo === 'object' && evo !== null ? evo : { name: evo };

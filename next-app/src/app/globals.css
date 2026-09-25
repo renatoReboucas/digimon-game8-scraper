@@ -240,6 +240,7 @@ h1 {
 .card-index {
   color: var(--muted);
   font-size: .7rem;
+  margin-right: 0.5rem;
 }
 
 .tags {
