@@ -1,9 +1,20 @@
+import { filterDigimons, readFavoriteIds, saveFavoriteIds, toggleFavorite } from './favorites.js';
+
 const list = document.querySelector('#digimon-list');
 const searchInput = document.querySelector('#search-input');
+const favoritesToggle = document.querySelector('#favorites-toggle');
 const resultCount = document.querySelector('#result-count');
 let digimons = [];
 let query = '';
+let showFavorites = false;
+let favoriteIds;
 const expanded = new Set();
+
+try {
+  favoriteIds = readFavoriteIds(window.localStorage);
+} catch {
+  favoriteIds = new Set();
+}
 
 function imageSource(item) {
   return item.localImageUrl || item.imageUrl || '';
@@ -74,6 +85,23 @@ function createCard(item) {
   name.textContent = item.name;
   identity.append(name, createGame8Button(item));
   header.append(identity);
+  const favoriteButton = document.createElement('button');
+  const isFavorite = favoriteIds.has(String(item.id));
+  favoriteButton.className = 'favorite-button';
+  favoriteButton.type = 'button';
+  favoriteButton.textContent = isFavorite ? 'Favoritado' : 'Favoritar';
+  favoriteButton.setAttribute('aria-pressed', String(isFavorite));
+  favoriteButton.setAttribute('aria-label', `${isFavorite ? 'Desfavoritar' : 'Favoritar'} ${item.name}`);
+  favoriteButton.addEventListener('click', () => {
+    favoriteIds = toggleFavorite(favoriteIds, item.id);
+    try {
+      saveFavoriteIds(window.localStorage, favoriteIds);
+    } catch {
+      saveFavoriteIds(null, favoriteIds);
+    }
+    render();
+  });
+  header.append(favoriteButton);
   const toggle = document.createElement('button');
   toggle.className = 'expand-button';
   toggle.type = 'button';
@@ -102,14 +130,16 @@ function createCard(item) {
 }
 
 function render() {
-  const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR');
-  const filtered = digimons.filter((item) => item.name?.toLocaleLowerCase('pt-BR').includes(normalizedQuery));
-  resultCount.textContent = `${filtered.length} ${filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'}`;
+  const filtered = filterDigimons(digimons, query, showFavorites, favoriteIds);
+  const favoriteCount = digimons.filter((item) => favoriteIds.has(String(item.id))).length;
+  resultCount.textContent = `${filtered.length} ${filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'} · ${favoriteCount} favoritos`;
   list.replaceChildren();
   if (!filtered.length) {
     const empty = document.createElement('p');
     empty.className = 'page-empty';
-    empty.textContent = query ? 'Nenhum Digimon corresponde à pesquisa.' : 'Nenhum Digimon disponível.';
+    empty.textContent = showFavorites
+      ? 'Nenhum favorito corresponde aos filtros atuais.'
+      : query ? 'Nenhum Digimon corresponde à pesquisa.' : 'Nenhum Digimon disponível.';
     list.append(empty);
     return;
   }
@@ -118,6 +148,11 @@ function render() {
 
 searchInput.addEventListener('input', (event) => {
   query = event.target.value;
+  render();
+});
+
+favoritesToggle.addEventListener('change', (event) => {
+  showFavorites = event.target.checked;
   render();
 });
 

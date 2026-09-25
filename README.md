@@ -35,7 +35,7 @@ A exclusão exige a digitação exata de `digimon-enriched.json`. O arquivo de e
 
 Durante a captura, a CLI informa a criação das pastas `.cache` e `src/images`, as páginas processadas, as imagens baixadas ou reutilizadas e o cache salvo. A interface web é aberta depois da captura concluída e exibe os dados gerados.
 
-Depois de capturar os dados, escolha `Abrir servidor web` e acesse `http://127.0.0.1:3000`. A interface oferece busca reativa por nome, cards expansíveis com evolutions e de-evolutions, imagens locais e botões para abrir cada página do Game8 em uma nova aba. Encerre o servidor com `Ctrl+C`.
+Depois de capturar os dados, escolha `Abrir servidor web` e acesse `http://127.0.0.1:3000`. A interface oferece busca reativa por nome, cards expansíveis com evolutions e de-evolutions, imagens locais e botões para abrir cada página do Game8 em uma nova aba. Cada Digimon pode ser favoritado ou desfavoritado; os favoritos ficam salvos no `localStorage` do navegador e podem ser filtrados pelo toggle `Apenas favoritos`. Encerre o servidor com `Ctrl+C`.
 
 Para executar diretamente:
 
