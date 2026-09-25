@@ -1,10 +1,11 @@
 'use client'
 
 import { ChevronDown, Filter } from 'lucide-react'
-import { useId, useState, type KeyboardEvent, type MouseEvent } from 'react'
+import { useId, useState } from 'react'
 import type { Digimon, DigimonEvolutionLink, DigimonEvolutionReference, DigimonLookupInput } from '@/types/DigimonTypes'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { DigimonImage } from './digimon-image'
 import { DigimonMetadataGrid, hasValue } from './digimon-metadata-grid'
 import { useDigimonLookup } from './digimon-context'
@@ -55,18 +56,6 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
     setIsExpanded((prev) => !prev)
   }
 
-  const handleHeaderClick = (event: MouseEvent<HTMLElement>) => {
-    if (event.target instanceof Element && event.target.closest('button, a')) return
-    toggleExpanded()
-  }
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if ((event.key === 'Enter' || event.key === ' ') && event.target === event.currentTarget) {
-      event.preventDefault()
-      toggleExpanded()
-    }
-  }
-
   const priorEvolutions: DigimonEvolutionLink[] = Array.isArray(digimon.deEvolutions ?? digimon.priorEvolutions ?? digimon.Digivolutions?.deEvolutions)
     ? (digimon.deEvolutions ?? digimon.priorEvolutions ?? digimon.Digivolutions?.deEvolutions ?? [])
       .map((evolution) => typeof evolution === 'string' ? { name: evolution } : evolution)
@@ -88,61 +77,74 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
 
   return (
     <article className={`related-item${isExpanded ? ' is-expanded' : ''}`}>
-      <div
-        className="related-header"
-        role="button"
-        tabIndex={0}
-        aria-expanded={isExpanded}
-        aria-controls={contentId}
-        aria-label={`${isExpanded ? 'Recolher detalhes de' : 'Expandir detalhes de'} ${digimon.name}`}
-        onClick={handleHeaderClick}
-        onKeyDown={handleKeyDown}
-      >
-        <DigimonImage item={digimon} className="related-image" />
-        <div className="related-content">
-          <h4>{digimon.name}</h4>
-          <div className="related-quick-tags">
-            {hasValue(digimon.number) && <Badge variant="outline">No. {digimon.number}</Badge>}
-            {hasValue(level) && <Badge variant="secondary">{level}</Badge>}
-            {hasValue(digimon.attribute) && <Badge variant="secondary">{digimon.attribute}</Badge>}
-          </div>
-        </div>
+      <div className="related-header">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className="related-summary"
+              type="button"
+              aria-expanded={isExpanded}
+              aria-controls={contentId}
+              aria-label={`${isExpanded ? 'Recolher detalhes de' : 'Expandir detalhes de'} ${digimon.name}`}
+              onClick={toggleExpanded}
+            >
+              <DigimonImage item={digimon} className="related-image" />
+              <span className="related-content">
+                <span className="related-name">{digimon.name}</span>
+                <span className="related-quick-tags">
+                  {hasValue(digimon.number) && <Badge variant="outline">No. {digimon.number}</Badge>}
+                  {hasValue(level) && <Badge variant="secondary">{level}</Badge>}
+                  {hasValue(digimon.attribute) && <Badge variant="secondary">{digimon.attribute}</Badge>}
+                </span>
+              </span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>{isExpanded ? 'Recolher' : 'Expandir'} detalhes de {digimon.name}</TooltipContent>
+        </Tooltip>
         <div className="related-actions">
           {hasValue(digimon.url) && <Link item={digimon} />}
-          <Button
-            className="parent-filter-button"
-            variant="ghost"
-            size="icon"
-            type="button"
-            title={`Filtrar pelo card de ${digimon.name}`}
-            aria-label={`Filtrar pelo card de ${digimon.name}`}
-            onClick={(event) => {
-              event.stopPropagation()
-              onSelectParent?.(digimon.name ?? '')
-            }}
-          >
-            <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
-          </Button>
-          <Button
-            className={`related-expand-toggle${isExpanded ? ' is-expanded' : ''}`}
-            variant="ghost"
-            size="icon"
-            type="button"
-            title={isExpanded ? 'Recolher detalhes' : 'Expandir detalhes'}
-            aria-label={isExpanded ? `Recolher detalhes de ${digimon.name}` : `Expandir detalhes de ${digimon.name}`}
-            aria-expanded={isExpanded}
-            onClick={(event) => {
-              event.stopPropagation()
-              toggleExpanded()
-            }}
-          >
-            <ChevronDown
-              aria-hidden="true"
-              size={16}
-              strokeWidth={2}
-              className={`expand-chevron${isExpanded ? ' is-rotated' : ''}`}
-            />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="parent-filter-button"
+                variant="ghost"
+                size="icon"
+                type="button"
+                aria-label={`Filtrar pelo card de ${digimon.name}`}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onSelectParent?.(digimon.name ?? '')
+                }}
+              >
+                <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Filtrar pelo card de {digimon.name}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={`related-expand-toggle${isExpanded ? ' is-expanded' : ''}`}
+                variant="ghost"
+                size="icon"
+                type="button"
+                aria-label={isExpanded ? `Recolher detalhes de ${digimon.name}` : `Expandir detalhes de ${digimon.name}`}
+                aria-expanded={isExpanded}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  toggleExpanded()
+                }}
+              >
+                <ChevronDown
+                  aria-hidden="true"
+                  size={16}
+                  strokeWidth={2}
+                  className={`expand-chevron${isExpanded ? ' is-rotated' : ''}`}
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{isExpanded ? 'Recolher' : 'Expandir'} detalhes de {digimon.name}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -216,21 +218,25 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                     const hasImg = Boolean(fullEvo.localImageUrl || fullEvo.imageUrl)
 
                     return (
-                      <Button
-                        key={`${evoName}-${idx}`}
-                        variant="outline"
-                        size="sm"
-                        type="button"
-                        className="related-sub-badge"
-                        title={`Filtrar pelo card de ${evoName}`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onSelectParent?.(evoName)
-                        }}
-                      >
-                        {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
-                        <span>{evoName}</span>
-                      </Button>
+                      <Tooltip key={`${evoName}-${idx}`}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            className="related-sub-badge"
+                            aria-label={`Filtrar pelo card de ${evoName}`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onSelectParent?.(evoName)
+                            }}
+                          >
+                            {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
+                            <span>{evoName}</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Filtrar pelo card de {evoName}</TooltipContent>
+                      </Tooltip>
                     )
                   })}
                 </div>
@@ -250,21 +256,25 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                     const hasImg = Boolean(fullEvo.localImageUrl || fullEvo.imageUrl)
 
                     return (
-                      <Button
-                        key={`${evoName}-${idx}`}
-                        variant="outline"
-                        size="sm"
-                        type="button"
-                        className="related-sub-badge"
-                        title={`Filtrar pelo card de ${evoName}`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onSelectParent?.(evoName)
-                        }}
-                      >
-                        {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
-                        <span>{evoName}</span>
-                      </Button>
+                      <Tooltip key={`${evoName}-${idx}`}>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            type="button"
+                            className="related-sub-badge"
+                            aria-label={`Filtrar pelo card de ${evoName}`}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onSelectParent?.(evoName)
+                            }}
+                          >
+                            {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
+                            <span>{evoName}</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Filtrar pelo card de {evoName}</TooltipContent>
+                      </Tooltip>
                     )
                   })}
                 </div>

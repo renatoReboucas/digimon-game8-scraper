@@ -10,7 +10,7 @@ interface LinkProps {
 }
 
 export function Link({ item }: LinkProps) {
-  const href = `${WIKI_URL}/${encodeURIComponent(item.name ?? '')}`
+  const href = `${WIKI_URL}/${encodeURIComponent((item.name ?? '').toLowerCase())}`
 
   return (
     <a className="game8-link" href={href} target="_blank" rel="noreferrer" title="Abrir no grindosaur">
