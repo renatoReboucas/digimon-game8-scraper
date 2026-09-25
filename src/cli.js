@@ -78,8 +78,8 @@ export async function restartScrape({
   scrape = runScrape,
   log = console.log
 } = {}) {
-  const confirmation = await rl.question('Para confirmar o recomeco, digite exatamente RECOMECAR: ');
-  if (confirmation.toLowerCase() !== 'recomecar') {
+  const confirmation = await rl.question('Tem certeza que deseja recomecar o scraping do zero? (s/N): ');
+  if (!['s', 'sim'].includes(confirmation.trim().toLowerCase())) {
     log('Recomeco cancelado. Nenhum arquivo foi apagado.');
     return null;
   }

@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import path from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 
 const DEFAULT_INPUT = 'digimon.json';
@@ -10,8 +11,20 @@ const DEFAULT_OUTPUT = 'digimon-enriched.json';
 const DEFAULT_CACHE = path.join('.cache', 'scrape-cache.json');
 const DEFAULT_IMAGES_DIR = path.join('src', 'images');
 const TRANSIENT_STATUSES = new Set([429, 500, 502, 503, 504]);
+const ANSI_BOLD = '\x1b[1m';
+const ANSI_GREEN = '\x1b[32m';
+const ANSI_YELLOW = '\x1b[33m';
+const ANSI_RESET = '\x1b[0m';
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+function formatTerminalMessage(message, color) {
+  return process.stdout.isTTY && color ? `${color}${message}${ANSI_RESET}` : message;
+}
+
+function formatProgressMessage(current, total, name) {
+  return formatTerminalMessage(`\n========== [${current}/${total}] Baixando página: ${name} ==========`, `${ANSI_BOLD}${ANSI_GREEN}`);
+}
 
 function normalizeText(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -207,7 +220,6 @@ async function saveCache(cachePath, cache) {
 export async function downloadImage(imageUrl, imagesDir, log = console.log) {
   const imagePath = getLocalImagePath(imageUrl, imagesDir);
   if (await exists(imagePath)) {
-    log(`Imagem ja existe: ${imagePath}`);
     return getLocalImageUrl(imageUrl);
   }
 
@@ -226,7 +238,7 @@ export async function downloadImage(imageUrl, imagesDir, log = console.log) {
 
   await mkdir(imagesDir, { recursive: true });
   await writeFile(imagePath, response.data);
-  log(`Imagem baixada: ${imagePath}`);
+  log(formatTerminalMessage(`Imagem baixada: ${imagePath}`, ANSI_YELLOW));
   return getLocalImageUrl(imageUrl);
 }
 
@@ -301,6 +313,7 @@ export async function runScrape({
   force = false,
   log = console.log
 } = {}) {
+  const startedAt = performance.now();
   if (path.resolve(input) === path.resolve(output)) {
     throw new Error('O arquivo de entrada e o arquivo de saida precisam ser diferentes.');
   }
@@ -321,30 +334,63 @@ export async function runScrape({
 
   const cache = await loadCache(cachePath);
   const enrichedItems = [];
-  const pendingUrls = [...new Set(items.map((item) => item.url).filter((url) => url && !cache[url]))];
+  const urls = [...new Set(items.map((item) => item.url).filter(Boolean))];
   const waitForRequestSlot = createRequestScheduler(minDelay, maxDelay);
-  let completed = 0;
-  await mapWithConcurrency(pendingUrls, concurrency, async (url) => {
-    await waitForRequestSlot();
-    const item = items.find((candidate) => candidate.url === url);
+  let started = 0;
+  let cacheSaveQueue = Promise.resolve();
+
+  const saveCacheIncrementally = async () => {
+    let release;
+    const previousSave = cacheSaveQueue;
+    cacheSaveQueue = new Promise((resolve) => { release = resolve; });
+    await previousSave;
     try {
-      log(`[${completed + 1}/${pendingUrls.length}] Baixando página: ${item?.name || url}`);
-      cache[url] = parseDigivolutions(await fetchPage(url), url);
+      await saveCache(cachePath, cache);
+      log(formatTerminalMessage(`Cache salvo: ${cachePath}`, ANSI_GREEN));
+    } finally {
+      release();
+    }
+  };
+
+  const enrichedByIndex = new Map();
+  const enrichItemsForUrl = async (url) => {
+    const matchingItems = items
+      .map((candidate, index) => ({ candidate, index }))
+      .filter(({ candidate }) => candidate.url === url);
+    for (const { candidate, index } of matchingItems) {
+      enrichedByIndex.set(index, await enrichImages({
+        ...candidate,
+        Digivolutions: cache[url] || { evolutions: [], deEvolutions: [] }
+      }, imagesDir, log));
+    }
+  };
+
+  await mapWithConcurrency(urls, concurrency, async (url) => {
+    const item = items.find((candidate) => candidate.url === url);
+    const current = ++started;
+    try {
+      if (!cache[url]) {
+        await waitForRequestSlot();
+        log(formatProgressMessage(current, urls.length, item?.name || url));
+        cache[url] = parseDigivolutions(await fetchPage(url), url);
+        await saveCacheIncrementally();
+      }
+
+      await enrichItemsForUrl(url);
     } catch (error) {
       log(`Falha em ${item?.name || url} (${url}): ${error.message}`);
       cache[url] = { evolutions: [], deEvolutions: [] };
+      await saveCacheIncrementally();
+      await enrichItemsForUrl(url);
     }
-    completed += 1;
   });
-  await saveCache(cachePath, cache);
-  log(`Cache salvo: ${cachePath}`);
 
-  for (const item of items) {
-    enrichedItems.push(await enrichImages({
+  items.forEach((item, index) => {
+    enrichedItems.push(enrichedByIndex.get(index) || {
       ...item,
-      Digivolutions: cache[item.url] || { evolutions: [], deEvolutions: [] }
-    }, imagesDir, log));
-  }
+      Digivolutions: { evolutions: [], deEvolutions: [] }
+    });
+  });
 
   await writeJson(output, {
     ...source,
@@ -353,7 +399,9 @@ export async function runScrape({
       collectionItems: enrichedItems
     }
   });
-  return { output, count: enrichedItems.length };
+  const durationMs = performance.now() - startedAt;
+  log(formatTerminalMessage(`Tempo total: ${(durationMs / 1000).toFixed(2)}s`, `${ANSI_BOLD}${ANSI_GREEN}`));
+  return { output, count: enrichedItems.length, durationMs };
 }
 
 function parseArgs(argv) {
