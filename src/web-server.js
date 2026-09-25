@@ -24,12 +24,12 @@ export async function loadDigimonData(dataFile = 'digimon-enriched.json') {
   try {
     source = JSON.parse(await readFile(dataFile, 'utf8'));
   } catch (error) {
-    throw new Error(`Não foi possível carregar ${dataFile}. Execute a captura antes de abrir o servidor: ${error.message}`);
+    throw new Error(`Nao foi possivel carregar ${dataFile}. Execute a captura antes de abrir o servidor: ${error.message}`);
   }
 
   const items = source?.collectionArraySchema?.collectionItems;
   if (!Array.isArray(items)) {
-    throw new Error(`JSON inválido: ${dataFile} não contém collectionArraySchema.collectionItems.`);
+    throw new Error(`JSON invalido: ${dataFile} nao contem collectionArraySchema.collectionItems.`);
   }
   return items;
 }
@@ -46,7 +46,7 @@ async function sendFile(response, filePath, contentType) {
     response.end(content);
   } catch {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    response.end('Não encontrado.');
+    response.end('Nao encontrado.');
   }
 }
 
@@ -73,7 +73,7 @@ export async function createWebServer({ dataFile = 'digimon-enriched.json', webD
     const filePath = safePath(path.resolve(root), relativePath);
     if (!filePath) {
       response.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
-      response.end('Caminho inválido.');
+      response.end('Caminho invalido.');
       return;
     }
     await sendFile(response, filePath, CONTENT_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream');

@@ -25,10 +25,15 @@ O menu usa esta ordem:
 
 1. Capturar dados
 2. Apagar output
-3. Abrir servidor web
-4. Sair
+3. Recomecar scraping do zero
+4. Abrir servidor web
+5. Sair
 
 A exclusão exige a digitação exata de `digimon-enriched.json`. O arquivo de entrada nunca é apagado.
+
+`Recomecar scraping do zero` exige a digitação exata de `RECOMECAR`, sem diferenciar maiusculas e minusculas. Com a confirmacao correta, a CLI remove `digimon-enriched.json`, `.cache/scrape-cache.json` e as imagens baixadas em `src/images/`, preservando `.gitkeep` e `digimon.json`. Em seguida, inicia automaticamente uma nova captura. Confirmacoes diferentes cancelam a operacao sem remover arquivos.
+
+Durante a captura, a CLI informa a criação das pastas `.cache` e `src/images`, as páginas processadas, as imagens baixadas ou reutilizadas e o cache salvo. A interface web é aberta depois da captura concluída e exibe os dados gerados.
 
 Depois de capturar os dados, escolha `Abrir servidor web` e acesse `http://127.0.0.1:3000`. A interface oferece busca reativa por nome, cards expansíveis com evolutions e de-evolutions, imagens locais e botões para abrir cada página do Game8 em uma nova aba. Encerre o servidor com `Ctrl+C`.
 

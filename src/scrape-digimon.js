@@ -186,7 +186,7 @@ async function fetchPage(url, options = {}) {
     }
   }
 
-  throw new Error(`Não foi possível acessar ${url}`);
+  throw new Error(`Nao foi possivel acessar ${url}`);
 }
 
 async function loadCache(cachePath) {
@@ -194,7 +194,7 @@ async function loadCache(cachePath) {
   try {
     return await readJson(cachePath);
   } catch {
-    console.warn(`Aviso: cache inválido em ${cachePath}; iniciando sem cache.`);
+    console.warn(`Aviso: cache invalido em ${cachePath}; iniciando sem cache.`);
     return {};
   }
 }
@@ -204,9 +204,12 @@ async function saveCache(cachePath, cache) {
   await writeJson(cachePath, cache);
 }
 
-export async function downloadImage(imageUrl, imagesDir) {
+export async function downloadImage(imageUrl, imagesDir, log = console.log) {
   const imagePath = getLocalImagePath(imageUrl, imagesDir);
-  if (await exists(imagePath)) return getLocalImageUrl(imageUrl);
+  if (await exists(imagePath)) {
+    log(`Imagem ja existe: ${imagePath}`);
+    return getLocalImageUrl(imageUrl);
+  }
 
   const response = await axios.get(imageUrl, {
     timeout: 20000,
@@ -223,6 +226,7 @@ export async function downloadImage(imageUrl, imagesDir) {
 
   await mkdir(imagesDir, { recursive: true });
   await writeFile(imagePath, response.data);
+  log(`Imagem baixada: ${imagePath}`);
   return getLocalImageUrl(imageUrl);
 }
 
@@ -260,11 +264,11 @@ function createRequestScheduler(minDelay, maxDelay) {
   };
 }
 
-async function enrichImages(item, imagesDir) {
+async function enrichImages(item, imagesDir, log) {
   const localize = async (entry) => {
     if (!entry?.imageUrl) return entry;
     try {
-      return { ...entry, localImageUrl: await downloadImage(entry.imageUrl, imagesDir) };
+      return { ...entry, localImageUrl: await downloadImage(entry.imageUrl, imagesDir, log) };
     } catch (error) {
       console.warn(`Falha ao baixar imagem de ${entry.name || 'item'} (${entry.imageUrl}): ${error.message}`);
       return entry;
@@ -294,20 +298,26 @@ export async function runScrape({
   minDelay = 2500,
   maxDelay = 5000,
   concurrency = 3,
-  force = false
+  force = false,
+  log = console.log
 } = {}) {
   if (path.resolve(input) === path.resolve(output)) {
-    throw new Error('O arquivo de entrada e o arquivo de saída precisam ser diferentes.');
+    throw new Error('O arquivo de entrada e o arquivo de saida precisam ser diferentes.');
   }
   if (!force && await exists(output)) {
-    throw new Error(`O arquivo de saída já existe: ${output}. Use a CLI ou --force para sobrescrevê-lo.`);
+    throw new Error(`O arquivo de saida ja existe: ${output}. Use a CLI ou --force para sobrescreve-lo.`);
   }
 
   const source = await readJson(input);
   const items = source?.collectionArraySchema?.collectionItems;
   if (!Array.isArray(items)) {
-    throw new Error('JSON inválido: collectionArraySchema.collectionItems não é um array.');
+    throw new Error('JSON invalido: collectionArraySchema.collectionItems nao e um array.');
   }
+
+  await mkdir(path.dirname(cachePath), { recursive: true });
+  await mkdir(imagesDir, { recursive: true });
+  log(`Pasta de cache pronta: ${path.dirname(cachePath)}`);
+  log(`Pasta de imagens pronta: ${imagesDir}`);
 
   const cache = await loadCache(cachePath);
   const enrichedItems = [];
@@ -318,21 +328,22 @@ export async function runScrape({
     await waitForRequestSlot();
     const item = items.find((candidate) => candidate.url === url);
     try {
-      console.log(`[${completed + 1}/${pendingUrls.length}] ${item?.name || url}`);
+      log(`[${completed + 1}/${pendingUrls.length}] Baixando página: ${item?.name || url}`);
       cache[url] = parseDigivolutions(await fetchPage(url), url);
     } catch (error) {
-      console.warn(`Falha em ${item?.name || url} (${url}): ${error.message}`);
+      log(`Falha em ${item?.name || url} (${url}): ${error.message}`);
       cache[url] = { evolutions: [], deEvolutions: [] };
     }
     completed += 1;
   });
   await saveCache(cachePath, cache);
+  log(`Cache salvo: ${cachePath}`);
 
   for (const item of items) {
     enrichedItems.push(await enrichImages({
       ...item,
       Digivolutions: cache[item.url] || { evolutions: [], deEvolutions: [] }
-    }, imagesDir));
+    }, imagesDir, log));
   }
 
   await writeJson(output, {
@@ -366,18 +377,18 @@ function parseArgs(argv) {
       console.log('Uso: npm run scrape -- [--input arquivo] [--output arquivo] [--delay-min ms] [--delay-max ms] [--concurrency n] [--force]');
       process.exit(0);
     } else {
-      throw new Error(`Opção desconhecida: ${argument}`);
+      throw new Error(`Opcao desconhecida: ${argument}`);
     }
   }
   if (!Number.isFinite(options.minDelay) || !Number.isFinite(options.maxDelay) || options.minDelay < 0 || options.maxDelay < options.minDelay || !Number.isInteger(options.concurrency) || options.concurrency < 1) {
-    throw new Error('Os intervalos de atraso são inválidos.');
+    throw new Error('Os intervalos de atraso sao invalidos.');
   }
   return options;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   runScrape(parseArgs(process.argv.slice(2)))
-    .then(({ output, count }) => console.log(`Concluído: ${count} itens gravados em ${output}.`))
+    .then(({ output, count }) => console.log(`Concluido: ${count} itens gravados em ${output}.`))
     .catch((error) => {
       console.error(`Erro: ${error.message}`);
       process.exitCode = 1;
