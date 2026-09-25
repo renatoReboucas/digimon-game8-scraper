@@ -837,7 +837,7 @@
 
 .scroll-to-top {
   position: fixed;
-  right: max(1rem, calc((100vw - 78rem) / 2));
+  right: max(1rem, calc((100vw - 78rem) / 2 - 4.25rem));
   bottom: 1rem;
   z-index: 20;
   display: grid;
