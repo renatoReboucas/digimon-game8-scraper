@@ -38,4 +38,10 @@ describe('favoritos', () => {
     expect(filterDigimons(digimons, 'agu', true, new Set(['1']))).toEqual([digimons[0]]);
     expect(filterDigimons(digimons, '', true, new Set(['2']))).toEqual([digimons[1]]);
   });
+
+  it('filtra somente o card pai selecionado', () => {
+    const digimons = [{ id: '1', name: 'Agumon' }, { id: '2', name: 'Gabumon' }];
+
+    expect(filterDigimons(digimons, '', false, new Set(), '2')).toEqual([digimons[1]]);
+  });
 });

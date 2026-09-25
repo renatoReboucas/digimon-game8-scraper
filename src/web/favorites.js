@@ -25,11 +25,12 @@ export function toggleFavorite(favoriteIds, id) {
   return nextFavoriteIds;
 }
 
-export function filterDigimons(digimons, query, showFavorites, favoriteIds) {
+export function filterDigimons(digimons, query, showFavorites, favoriteIds, selectedParentId = null) {
   const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR');
   return digimons.filter((item) => {
     const matchesQuery = item.name?.toLocaleLowerCase('pt-BR').includes(normalizedQuery);
     const isFavorite = favoriteIds.has(String(item.id));
-    return matchesQuery && (!showFavorites || isFavorite);
+    const isSelectedParent = selectedParentId === null || String(item.id) === String(selectedParentId);
+    return matchesQuery && (!showFavorites || isFavorite) && isSelectedParent;
   });
 }
