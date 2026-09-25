@@ -52,7 +52,7 @@ function Game8Link({ item }) {
   );
 }
 
-function RelatedItem({ item, parentId, onSelectParent }) {
+function RelatedItem({ item, onSelectParent }) {
   return (
     <article className="related-item">
       <Image item={item} className="related-image" />
@@ -65,7 +65,7 @@ function RelatedItem({ item, parentId, onSelectParent }) {
             type="button"
             title="Filtrar pelo card pai"
             aria-label={`Filtrar pelo card pai de ${item.name}`}
-            onClick={() => onSelectParent(parentId)}
+            onClick={() => onSelectParent(item.id)}
           >
             <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
             Filtrar
@@ -76,7 +76,7 @@ function RelatedItem({ item, parentId, onSelectParent }) {
   );
 }
 
-function EvolutionSection({ title, items, parentId, onSelectParent }) {
+function EvolutionSection({ title, items, onSelectParent }) {
   return (
     <section className="evolution-section">
       <h3>{title}</h3>
@@ -88,7 +88,6 @@ function EvolutionSection({ title, items, parentId, onSelectParent }) {
             <RelatedItem
               key={`${item.id || item.url || item.name}-${index}`}
               item={item}
-              parentId={parentId}
               onSelectParent={onSelectParent}
             />
           ))}
@@ -137,6 +136,7 @@ function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, onToggleE
             onClick={() => onToggleFavorite(item.id)}
           >
             <Star aria-hidden="true" size={17} fill={isFavorite ? 'currentColor' : 'none'} strokeWidth={1.8} />
+            <span>{isFavorite ? 'Desfavoritar' : 'Favoritar'}</span>
           </button>
           <span className="expand-indicator" aria-hidden="true" title={isExpanded ? 'Recolher evolucoes' : 'Expandir evolucoes'}>
             {isExpanded ? <ChevronUp size={15} strokeWidth={1.8} /> : <ChevronDown size={15} strokeWidth={1.8} />}
@@ -150,9 +150,9 @@ function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, onToggleE
       </div>
       {isExpanded && (
         <div className="evolution-details">
-          <EvolutionSection title="Evolutions" items={relations.evolutions || []} parentId={item.id} onSelectParent={onSelectParent} />
+          <EvolutionSection title="Evolutions" items={relations.evolutions || []} onSelectParent={onSelectParent} />
           <div className="divider" role="separator" />
-          <EvolutionSection title="De-evolutions" items={relations.deEvolutions || []} parentId={item.id} onSelectParent={onSelectParent} />
+          <EvolutionSection title="De-evolutions" items={relations.deEvolutions || []} onSelectParent={onSelectParent} />
         </div>
       )}
     </article>
@@ -197,6 +197,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }) {
   function selectParent(id) {
     const parent = digimons.find((item) => String(item.id) === String(id));
     setSelectedParentId(null);
+    setShowFavorites(false);
     setQuery(parent?.name || '');
   }
 

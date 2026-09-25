@@ -118,23 +118,25 @@ h1 {
   margin-top: 14px;
   padding: 9px 13px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 6px;
   background: rgba(24, 35, 51, .88);
   color: var(--muted);
   font-size: .78rem;
   cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+.favorites-filter:hover,
+.favorites-filter:has(input:checked) {
+  border-color: var(--favorite);
+  background: rgba(255, 209, 102, .12);
+  color: var(--favorite);
 }
 
 .favorites-filter input {
   width: 16px;
   height: 16px;
-  accent-color: var(--accent);
-}
-
-.favorites-filter:has(input:checked) {
-  border-color: var(--accent);
-  background: rgba(98, 214, 178, .14);
-  color: var(--accent-strong);
+  accent-color: var(--favorite);
 }
 
 .result-count {
@@ -224,6 +226,7 @@ h1 {
   font-size: .72rem;
   text-decoration: none;
   cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
 }
 
 .game8-link {
@@ -231,19 +234,20 @@ h1 {
 }
 
 .game8-link:hover,
-.favorite-button:hover,
 .parent-filter-button:hover {
   border-color: var(--accent);
   color: var(--text);
 }
 
 .favorite-button {
-  padding: 6px 9px;
+  gap: 6px;
+  padding: 6px 10px;
   color: var(--muted);
-  font-size: 1.05rem;
+  font-size: .75rem;
   line-height: 1;
 }
 
+.favorite-button:hover,
 .favorite-button.is-favorite {
   border-color: var(--favorite);
   background: rgba(255, 209, 102, .12);
