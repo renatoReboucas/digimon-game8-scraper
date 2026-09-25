@@ -2,7 +2,9 @@
 
 import { ChevronDown, Filter } from 'lucide-react'
 import { useId, useState, type KeyboardEvent, type MouseEvent } from 'react'
-import type { Digimon, DigimonEvolutionLink, DigimonLookupInput } from '@/types/DigimonTypes'
+import type { Digimon, DigimonEvolutionLink, DigimonEvolutionReference, DigimonLookupInput } from '@/types/DigimonTypes'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
 import { DigimonImage } from './digimon-image'
 import { DigimonMetadataGrid, hasValue } from './digimon-metadata-grid'
 import { useDigimonLookup } from './digimon-context'
@@ -36,8 +38,8 @@ const KNOWN_KEYS = new Set<string>([
 ])
 
 interface RelatedItemProps {
-  item: Digimon
-  onSelectParent?: (name: string) => void
+  item: DigimonEvolutionReference
+  onSelectParent?: ((name: string) => void) | undefined
 }
 
 export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
@@ -45,15 +47,16 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
   const contentId = useId()
   const { lookupDigimon } = useDigimonLookup()
 
-  const matched = lookupDigimon(item as DigimonLookupInput)
-  const digimon: Digimon = matched ? { ...item, ...matched } as Digimon : item
+  const reference = typeof item === 'string' ? { name: item } : item
+  const matched = lookupDigimon(reference satisfies DigimonLookupInput)
+  const digimon: Digimon = matched ? { ...reference, ...matched } : reference
 
   const toggleExpanded = () => {
     setIsExpanded((prev) => !prev)
   }
 
   const handleHeaderClick = (event: MouseEvent<HTMLElement>) => {
-    if ((event.target as HTMLElement).closest('button, a')) return
+    if (event.target instanceof Element && event.target.closest('button, a')) return
     toggleExpanded()
   }
 
@@ -66,10 +69,12 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
 
   const priorEvolutions: DigimonEvolutionLink[] = Array.isArray(digimon.deEvolutions ?? digimon.priorEvolutions ?? digimon.Digivolutions?.deEvolutions)
     ? (digimon.deEvolutions ?? digimon.priorEvolutions ?? digimon.Digivolutions?.deEvolutions ?? [])
+      .map((evolution) => typeof evolution === 'string' ? { name: evolution } : evolution)
     : []
 
   const nextEvolutions: DigimonEvolutionLink[] = Array.isArray(digimon.evolutions ?? digimon.nextEvolutions ?? digimon.Digivolutions?.evolutions)
     ? (digimon.evolutions ?? digimon.nextEvolutions ?? digimon.Digivolutions?.evolutions ?? [])
+      .map((evolution) => typeof evolution === 'string' ? { name: evolution } : evolution)
     : []
 
   const level = digimon.level || digimon.generation || ''
@@ -97,15 +102,17 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
         <div className="related-content">
           <h4>{digimon.name}</h4>
           <div className="related-quick-tags">
-            {hasValue(digimon.number) && <span className="quick-tag">No. {digimon.number}</span>}
-            {hasValue(level) && <span className="quick-tag">{level}</span>}
-            {hasValue(digimon.attribute) && <span className="quick-tag">{digimon.attribute}</span>}
+            {hasValue(digimon.number) && <Badge variant="outline">No. {digimon.number}</Badge>}
+            {hasValue(level) && <Badge variant="secondary">{level}</Badge>}
+            {hasValue(digimon.attribute) && <Badge variant="secondary">{digimon.attribute}</Badge>}
           </div>
         </div>
         <div className="related-actions">
           {hasValue(digimon.url) && <Link item={digimon} />}
-          <button
+          <Button
             className="parent-filter-button"
+            variant="ghost"
+            size="icon"
             type="button"
             title={`Filtrar pelo card de ${digimon.name}`}
             aria-label={`Filtrar pelo card de ${digimon.name}`}
@@ -115,9 +122,11 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
             }}
           >
             <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
-          </button>
-          <button
+          </Button>
+          <Button
             className={`related-expand-toggle${isExpanded ? ' is-expanded' : ''}`}
+            variant="ghost"
+            size="icon"
             type="button"
             title={isExpanded ? 'Recolher detalhes' : 'Expandir detalhes'}
             aria-label={isExpanded ? `Recolher detalhes de ${digimon.name}` : `Expandir detalhes de ${digimon.name}`}
@@ -133,7 +142,7 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
               strokeWidth={2}
               className={`expand-chevron${isExpanded ? ' is-rotated' : ''}`}
             />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -158,12 +167,12 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                 <div className="related-badges-list">
                   {Array.isArray(digimon.fields) ? (
                     digimon.fields.map((f, idx) => (
-                      <span key={idx} className="related-field-badge">
+                      <Badge key={idx} variant="secondary" className="related-field-badge">
                         {typeof f === 'string' ? f : f?.name || JSON.stringify(f)}
-                      </span>
+                      </Badge>
                     ))
                   ) : (
-                    <span className="related-field-badge">{String(digimon.fields)}</span>
+                    <Badge variant="secondary" className="related-field-badge">{String(digimon.fields)}</Badge>
                   )}
                 </div>
               </div>
@@ -176,8 +185,8 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                   {Array.isArray(digimon.skills) ? (
                     digimon.skills.map((skill, idx) => {
                       const isObj = typeof skill === 'object' && skill !== null
-                      const skillName = isObj ? (skill as { name?: string; skillName?: string }).name || (skill as { name?: string; skillName?: string }).skillName || 'Skill' : String(skill)
-                      const skillDesc = isObj ? (skill as { description?: string; desc?: string }).description || (skill as { description?: string; desc?: string }).desc : null
+                      const skillName = isObj ? skill.name || skill.skillName || 'Skill' : String(skill)
+                      const skillDesc = isObj ? skill.description || skill.desc : null
                       return (
                         <div key={idx} className="related-skill-item">
                           <span className="skill-name">{skillName}</span>
@@ -199,16 +208,18 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                 <span className="related-section-title">De-evolutions</span>
                 <div className="related-badges-list">
                   {priorEvolutions.map((evo, idx) => {
-                    const evoObj = typeof evo === 'object' && evo !== null ? (evo as DigimonEvolutionLink) : { name: String(evo ?? '') }
+                    const evoObj = typeof evo === 'string' ? { name: evo } : evo
                     const evoName = evoObj.name
                     if (!evoName) return null
-                    const matchedEvo = lookupDigimon(evoObj as DigimonLookupInput)
-                    const fullEvo = matchedEvo ? ({ ...evoObj, ...matchedEvo } as Digimon) : (evoObj as Digimon)
+                    const matchedEvo = lookupDigimon(evoObj)
+                    const fullEvo: Digimon = matchedEvo ? { ...evoObj, ...matchedEvo } : evoObj
                     const hasImg = Boolean(fullEvo.localImageUrl || fullEvo.imageUrl)
 
                     return (
-                      <button
+                      <Button
                         key={`${evoName}-${idx}`}
+                        variant="outline"
+                        size="sm"
                         type="button"
                         className="related-sub-badge"
                         title={`Filtrar pelo card de ${evoName}`}
@@ -219,7 +230,7 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                       >
                         {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
                         <span>{evoName}</span>
-                      </button>
+                      </Button>
                     )
                   })}
                 </div>
@@ -231,16 +242,18 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                 <span className="related-section-title">Evolutions</span>
                 <div className="related-badges-list">
                   {nextEvolutions.map((evo, idx) => {
-                    const evoObj = typeof evo === 'object' && evo !== null ? (evo as DigimonEvolutionLink) : { name: String(evo ?? '') }
+                    const evoObj = typeof evo === 'string' ? { name: evo } : evo
                     const evoName = evoObj.name
                     if (!evoName) return null
-                    const matchedEvo = lookupDigimon(evoObj as DigimonLookupInput)
-                    const fullEvo = matchedEvo ? ({ ...evoObj, ...matchedEvo } as Digimon) : (evoObj as Digimon)
+                    const matchedEvo = lookupDigimon(evoObj)
+                    const fullEvo: Digimon = matchedEvo ? { ...evoObj, ...matchedEvo } : evoObj
                     const hasImg = Boolean(fullEvo.localImageUrl || fullEvo.imageUrl)
 
                     return (
-                      <button
+                      <Button
                         key={`${evoName}-${idx}`}
+                        variant="outline"
+                        size="sm"
                         type="button"
                         className="related-sub-badge"
                         title={`Filtrar pelo card de ${evoName}`}
@@ -251,7 +264,7 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
                       >
                         {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
                         <span>{evoName}</span>
-                      </button>
+                      </Button>
                     )
                   })}
                 </div>

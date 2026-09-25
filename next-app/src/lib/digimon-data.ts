@@ -2,6 +2,7 @@ import 'server-only'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { Digimon } from '@/types/DigimonTypes'
+import { parseDigimonData } from '@/lib/digimon-data-schema'
 
 const defaultDataFile = path.join(process.cwd(), 'data', 'digimon-enriched.json')
 
@@ -16,10 +17,5 @@ export async function loadDigimonData(): Promise<Digimon[]> {
     throw new Error(`Nao foi possivel carregar os dados de Digimon: ${message}`)
   }
 
-  const items = (source as { collectionArraySchema?: { collectionItems?: unknown } } | null)?.collectionArraySchema?.collectionItems
-  if (!Array.isArray(items)) {
-    throw new Error('JSON invalido: collectionArraySchema.collectionItems deve ser uma lista.')
-  }
-
-  return items as Digimon[]
+  return parseDigimonData(source)
 }

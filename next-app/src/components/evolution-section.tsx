@@ -1,12 +1,12 @@
 'use client'
 
-import type { Digimon } from '@/types/DigimonTypes'
+import type { DigimonEvolutionReference } from '@/types/DigimonTypes'
 import { RelatedItem } from './related-item'
 
 interface EvolutionSectionProps {
   title: string
-  items: Array<Partial<Digimon>>
-  onSelectParent?: (name: string) => void
+  items: DigimonEvolutionReference[]
+  onSelectParent?: ((name: string) => void) | undefined
 }
 
 export function EvolutionSection({ title, items, onSelectParent }: EvolutionSectionProps) {
@@ -17,13 +17,17 @@ export function EvolutionSection({ title, items, onSelectParent }: EvolutionSect
         <p className="empty-state">Nenhum registro</p>
       ) : (
         <div className="related-grid">
-          {items.map((item, index) => (
-            <RelatedItem
-              key={`${item.id ?? item.url ?? item.name ?? 'evolution'}-${index}`}
-              item={item as Digimon}
-              onSelectParent={onSelectParent}
-            />
-          ))}
+          {items.map((item, index) => {
+            const key = typeof item === 'string' ? item : item.id ?? item.url ?? item.name ?? 'evolution'
+
+            return (
+              <RelatedItem
+                key={`${key}-${index}`}
+                item={item}
+                onSelectParent={onSelectParent}
+              />
+            )
+          })}
         </div>
       )}
     </section>

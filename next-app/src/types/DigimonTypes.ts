@@ -1,56 +1,58 @@
 export type DigimonId = string | number
+export type DigimonText = string | null
 
 export interface DigimonSkill {
-  name?: string
-  skillName?: string
-  description?: string
-  desc?: string
-  [key: string]: unknown
+  name?: DigimonText
+  skillName?: DigimonText
+  description?: DigimonText
+  desc?: DigimonText
 }
 
 export interface DigimonFieldItem {
-  name?: string
-  [key: string]: unknown
+  name?: DigimonText
 }
 
 export interface DigimonEvolutionLink {
-  name?: string
-  url?: string
-  imageUrl?: string
-  localImageUrl?: string
+  id?: DigimonId | null
+  name?: DigimonText
+  url?: DigimonText
+  imageUrl?: DigimonText
+  localImageUrl?: DigimonText
   [key: string]: unknown
 }
 
+export type DigimonEvolutionReference = DigimonEvolutionLink | string
+
 export interface Digivolutions {
-  evolutions?: DigimonEvolutionLink[]
-  deEvolutions?: DigimonEvolutionLink[]
+  evolutions?: DigimonEvolutionReference[]
+  deEvolutions?: DigimonEvolutionReference[]
 }
 
 export interface Digimon {
-  id?: DigimonId
-  name?: string
-  imageUrl?: string
-  url?: string
-  number?: string
-  attribute?: string
-  generation?: string
-  basePersonality?: string
-  agentRankReq?: string
-  type?: string
-  level?: string
-  description?: string
-  desc?: string
-  flavorText?: string
-  releaseDate?: string
-  release_date?: string
-  Digivolutions?: Digivolutions
-  evolutions?: DigimonEvolutionLink[]
-  deEvolutions?: DigimonEvolutionLink[]
-  nextEvolutions?: DigimonEvolutionLink[]
-  priorEvolutions?: DigimonEvolutionLink[]
-  localImageUrl?: string
-  fields?: Array<string | DigimonFieldItem>
-  skills?: Array<string | DigimonSkill>
+  id?: DigimonId | null
+  name?: DigimonText
+  imageUrl?: DigimonText
+  url?: DigimonText
+  number?: DigimonText
+  attribute?: DigimonText
+  generation?: DigimonText
+  basePersonality?: DigimonText
+  agentRankReq?: DigimonText
+  type?: DigimonText
+  level?: DigimonText
+  description?: DigimonText
+  desc?: DigimonText
+  flavorText?: DigimonText
+  releaseDate?: DigimonText
+  release_date?: DigimonText
+  Digivolutions?: Digivolutions | null
+  evolutions?: DigimonEvolutionReference[]
+  deEvolutions?: DigimonEvolutionReference[]
+  nextEvolutions?: DigimonEvolutionReference[]
+  priorEvolutions?: DigimonEvolutionReference[]
+  localImageUrl?: DigimonText
+  fields?: Array<string | DigimonFieldItem> | string | null
+  skills?: Array<string | DigimonSkill> | string | null
   [key: string]: unknown
 }
 

@@ -1,8 +1,14 @@
 'use client'
 
 import { Search, X } from 'lucide-react'
+import { useQueryState } from 'nuqs'
 import { useEffect, useMemo, useState } from 'react'
 import type { Digimon } from '@/types/DigimonTypes'
+import { filterDigimons } from '@/lib/digimon-search'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Checkbox } from './ui/checkbox'
+import { Input } from './ui/input'
 import { DigimonCard } from './digimon-card'
 import { DigimonProvider } from './digimon-context'
 import { readFavorites, saveFavorites } from './lib/favorites'
@@ -14,7 +20,11 @@ interface DigimonAtlasProps {
 }
 
 export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasProps) {
-  const [query, setQuery] = useState<string>('')
+  const [query, setQuery] = useQueryState('q', {
+    defaultValue: '',
+    history: 'replace',
+    clearOnDefault: true,
+  })
   const [showFavorites, setShowFavorites] = useState<boolean>(false)
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set<string>())
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set<string>())
@@ -24,15 +34,12 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
     setFavoriteIds(readFavorites())
   }, [])
 
-  const filtered = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR')
-    return digimons.filter((item) => {
-      const matchesQuery = item.name?.toLocaleLowerCase('pt-BR').includes(normalizedQuery) ?? false
-      const matchesFavorite = !showFavorites || favoriteIds.has(String(item.id))
-      const matchesParent = selectedParentId === null || String(item.id) === String(selectedParentId)
-      return matchesQuery && matchesFavorite && matchesParent
-    })
-  }, [digimons, favoriteIds, query, selectedParentId, showFavorites])
+  const filtered = useMemo(() => filterDigimons(digimons, {
+    query,
+    showFavorites,
+    favoriteIds,
+    selectedParentId,
+  }), [digimons, favoriteIds, query, selectedParentId, showFavorites])
 
   function toggleFavorite(id: string | number) {
     const next = new Set(favoriteIds)
@@ -54,7 +61,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   function selectParent(name?: string) {
     setSelectedParentId(null)
     setShowFavorites(false)
-    setQuery(name ?? '')
+    void setQuery(name ?? '')
     if (typeof window !== 'undefined') {
       requestAnimationFrame(() => {
         const input = document.getElementById('search-input')
@@ -84,38 +91,40 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
           <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
           <label className="search-box" htmlFor="search-input">
             <Search aria-hidden="true" size={18} strokeWidth={1.8} />
-            <input
+            <Input
+              className="search-input"
               id="search-input"
               type="text"
               placeholder="Pesquisar por nome..."
               autoComplete="off"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => void setQuery(event.target.value)}
             />
             {query && (
-              <button
+              <Button
                 className="search-clear"
+                variant="ghost"
+                size="icon"
                 type="button"
                 title="Limpar pesquisa"
                 aria-label="Limpar pesquisa"
-                onClick={() => setQuery('')}
+                onClick={() => void setQuery('')}
               >
                 <X aria-hidden="true" size={16} strokeWidth={2} />
-              </button>
+              </Button>
             )}
           </label>
           <label className="favorites-filter" htmlFor="favorites-toggle">
-            <input
+            <Checkbox
               id="favorites-toggle"
-              type="checkbox"
               checked={showFavorites}
-              onChange={(event) => setShowFavorites(event.target.checked)}
+              onCheckedChange={(checked) => setShowFavorites(checked === true)}
             />
             <span>Apenas favoritos</span>
           </label>
-          <p className="result-count" aria-live="polite">
-            {loadError || `${filtered.length} ${filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'} · ${favoriteCount} favoritos`}
-          </p>
+          <div className="result-count" aria-live="polite">
+            {loadError || <><Badge variant="secondary">{filtered.length} {filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'}</Badge><span>{favoriteCount} favoritos</span></>}
+          </div>
         </header>
         <section className="digimon-list" aria-live="polite">
           {!loadError && !filtered.length ? <p className="page-empty">{emptyMessage}</p> : null}

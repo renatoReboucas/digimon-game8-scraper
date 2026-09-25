@@ -107,21 +107,10 @@ Analise todo o código e implemente tipagem rigorosa em toda a aplicação.
 
 - useState
 - useReducer
-- Redux
 - Zustand
 - Context API
-- Qualquer outro gerenciamento de estado
+- nuqs
 
-### Backend e comunicação
-
-- API Clients
-- Requests
-- Responses
-- DTOs
-- Services
-- Server Actions
-- Route Handlers
-- Middlewares
 
 ### Dados
 
@@ -133,21 +122,6 @@ Analise todo o código e implemente tipagem rigorosa em toda a aplicação.
 - Utilitários
 - Helpers
 
-### Data Fetching
-
-- React Query
-- TanStack Query
-- SWR
-- Fetch nativo
-- Mutations
-- Queries
-
-### Forms
-
-- React Hook Form
-- Zod
-- Validações
-- Schemas
 
 ---
 
@@ -240,8 +214,6 @@ Seguir boas práticas modernas de:
 - Next.js
 - React
 - TypeScript
-- Clean Code
-- SOLID
 - Component Composition
 
 ---
@@ -288,4 +260,5 @@ A aplicação deve:
 - Compilar sem warnings.
 - Estar preparada para crescimento em larga escala.
 - Seguir as melhores práticas modernas de **Next.js**, **React**, **TypeScript**, **Tailwind CSS** e **Shadcn/UI**.
-- Ter código limpo, consistente, reutilizável e de fácil manutenção.
+- Ter código limpo, consistente, documentado, reutilizável e de fácil manutenção.
+- nuqs deve ser ultilizado na busca para ficar persistido na url a busca respeitando as regras do input.
