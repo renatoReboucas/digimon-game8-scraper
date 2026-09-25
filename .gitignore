@@ -2,3 +2,5 @@ node_modules/
 .cache/
 *.log
 digimon-enriched.json
+scrape/.cache/
+scrape/digimon-enriched.json

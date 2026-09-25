@@ -1,0 +1,4 @@
+node_modules/
+.next/
+.env*
+digimon-assets.zip

@@ -5,9 +5,12 @@
   "type": "module",
   "description": "Scraper de Digivolutions do Game8 para os dados de Digimon.",
   "scripts": {
-    "scrape": "node src/scrape-digimon.js",
-    "cli": "node src/cli.js",
-    "test": "vitest run"
+    "scrape": "node scrape/src/scrape-digimon.js",
+    "cli": "node scrape/src/cli.js",
+    "test": "vitest run scrape/test",
+    "next:dev": "npm --prefix next-app run dev",
+    "next:build": "npm --prefix next-app run build",
+    "next:start": "npm --prefix next-app run start"
   },
   "engines": {
     "node": ">=18.17"
