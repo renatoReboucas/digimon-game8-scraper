@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client';
 
+import { ChevronDown, ChevronUp, Filter, MonitorCloud, Search, Star } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const FAVORITES_STORAGE_KEY = 'digimon-atlas:favorites:v1';
@@ -45,7 +46,7 @@ function Image({ item, className }) {
 function Game8Link({ item }) {
   return (
     <a className="game8-link" href={item.url} target="_blank" rel="noreferrer" title="Abrir no Game8">
-      <span aria-hidden="true">↗</span>
+      <MonitorCloud aria-hidden="true" size={15} strokeWidth={1.8} />
       Game8
     </a>
   );
@@ -62,11 +63,12 @@ function RelatedItem({ item, parentId, onSelectParent }) {
           <button
             className="parent-filter-button"
             type="button"
-            title="Ver card pai"
-            aria-label={`Mostrar somente o card pai de ${item.name}`}
+            title="Filtrar pelo card pai"
+            aria-label={`Filtrar pelo card pai de ${item.name}`}
             onClick={() => onSelectParent(parentId)}
           >
-            ↑
+            <Filter aria-hidden="true" size={14} strokeWidth={1.8} />
+            Filtrar
           </button>
         </div>
       </div>
@@ -134,9 +136,11 @@ function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, onToggleE
             aria-label={`${isFavorite ? 'Desfavoritar' : 'Favoritar'} ${item.name}`}
             onClick={() => onToggleFavorite(item.id)}
           >
-            {isFavorite ? '★' : '☆'}
+            <Star aria-hidden="true" size={17} fill={isFavorite ? 'currentColor' : 'none'} strokeWidth={1.8} />
           </button>
-          <span className="expand-indicator" aria-hidden="true">{isExpanded ? '⌃' : '⌄'}</span>
+          <span className="expand-indicator" aria-hidden="true" title={isExpanded ? 'Recolher evolucoes' : 'Expandir evolucoes'}>
+            {isExpanded ? <ChevronUp size={15} strokeWidth={1.8} /> : <ChevronDown size={15} strokeWidth={1.8} />}
+          </span>
         </div>
       </div>
       <div className="card-meta">
@@ -212,7 +216,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }) {
         <h1>Digimon Atlas</h1>
         <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
         <label className="search-box" htmlFor="search-input">
-          <span aria-hidden="true">⌕</span>
+          <Search aria-hidden="true" size={18} strokeWidth={1.8} />
           <input
             id="search-input"
             type="search"

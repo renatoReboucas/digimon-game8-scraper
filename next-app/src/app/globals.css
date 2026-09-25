@@ -7,6 +7,7 @@
   --muted: #91a4b3;
   --accent: #62d6b2;
   --accent-strong: #9cf3d7;
+  --favorite: #ffd166;
   --danger: #ff9f8e;
 }
 
@@ -99,6 +100,11 @@ h1 {
   background: transparent;
   color: var(--text);
   font-size: 1.05rem;
+}
+
+.search-box>svg,
+.game8-link>svg {
+  flex: 0 0 auto;
 }
 
 .search-box input::placeholder {
@@ -220,9 +226,8 @@ h1 {
   cursor: pointer;
 }
 
-.game8-link span {
-  margin-right: 5px;
-  font-size: 1rem;
+.game8-link {
+  gap: 5px;
 }
 
 .game8-link:hover,
@@ -240,12 +245,20 @@ h1 {
 }
 
 .favorite-button.is-favorite {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--favorite);
+  background: rgba(255, 209, 102, .12);
+  color: var(--favorite);
 }
 
 .expand-indicator {
-  min-width: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(18, 26, 38, .7);
   color: var(--muted);
   text-align: center;
 }
@@ -311,8 +324,8 @@ h1 {
 
 .parent-filter-button {
   min-height: 28px;
-  padding: 4px 8px;
-  font-size: 1rem;
+  gap: 6px;
+  padding: 4px 9px;
 }
 
 .divider {
