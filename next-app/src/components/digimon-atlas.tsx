@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { DigimonCard } from './digimon-card';
 import { readFavorites, saveFavorites } from './lib/favorites';
@@ -66,12 +66,23 @@ export default function DigimonAtlas({ digimons, loadError = '' }) {
           <Search aria-hidden="true" size={18} strokeWidth={1.8} />
           <input
             id="search-input"
-            type="search"
+            type="text"
             placeholder="Pesquisar por nome..."
             autoComplete="off"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
+          {query && (
+            <button
+              className="search-clear"
+              type="button"
+              title="Limpar pesquisa"
+              aria-label="Limpar pesquisa"
+              onClick={() => setQuery('')}
+            >
+              <X aria-hidden="true" size={16} strokeWidth={2} />
+            </button>
+          )}
         </label>
         <label className="favorites-filter" htmlFor="favorites-toggle">
           <input

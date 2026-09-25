@@ -111,6 +111,25 @@ h1 {
   color: #64798a;
 }
 
+.search-clear {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s, background .15s;
+}
+
+.search-clear:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, .08);
+}
+
 .favorites-filter {
   display: inline-flex;
   align-items: center;
