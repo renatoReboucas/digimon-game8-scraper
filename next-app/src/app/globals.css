@@ -536,21 +536,34 @@ h1 {
 }
 
 .related-sub-badge {
-  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 9px 3px 4px;
   border: 1px solid #355664;
   border-radius: 4px;
   background: rgba(24, 35, 51, .8);
   color: var(--text);
   font-family: Consolas, 'Courier New', monospace;
-  font-size: .7rem;
+  font-size: .72rem;
   cursor: pointer;
-  transition: border-color .15s, background .15s, color .15s;
+  transition: border-color .15s, background .15s, color .15s, transform .1s ease;
 }
 
 .related-sub-badge:hover {
   border-color: var(--accent);
   background: rgba(98, 214, 178, .15);
   color: var(--accent-strong);
+  transform: translateY(-1px);
+}
+
+.sub-badge-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 3px;
+  background: rgba(9, 14, 21, .5);
+  flex-shrink: 0;
 }
 
 .related-skill-item {

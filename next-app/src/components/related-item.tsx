@@ -262,8 +262,13 @@ export function RelatedItem({ item, onSelectParent }) {
                 <span className="related-section-title">Prior Evolutions</span>
                 <div className="related-badges-list">
                   {priorEvolutions.map((evo, idx) => {
-                    const evoName = typeof evo === 'string' ? evo : evo?.name;
+                    const evoObj = typeof evo === 'object' && evo !== null ? evo : { name: evo };
+                    const evoName = evoObj.name;
                     if (!evoName) return null;
+                    const matchedEvo = lookupDigimon?.(evoObj);
+                    const fullEvo = matchedEvo ? { ...evoObj, ...matchedEvo } : evoObj;
+                    const hasImg = Boolean(fullEvo.localImageUrl || fullEvo.imageUrl);
+
                     return (
                       <button
                         key={`${evoName}-${idx}`}
@@ -275,7 +280,8 @@ export function RelatedItem({ item, onSelectParent }) {
                           onSelectParent?.(evoName);
                         }}
                       >
-                        {evoName}
+                        {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
+                        <span>{evoName}</span>
                       </button>
                     );
                   })}
@@ -289,8 +295,13 @@ export function RelatedItem({ item, onSelectParent }) {
                 <span className="related-section-title">Next Evolutions</span>
                 <div className="related-badges-list">
                   {nextEvolutions.map((evo, idx) => {
-                    const evoName = typeof evo === 'string' ? evo : evo?.name;
+                    const evoObj = typeof evo === 'object' && evo !== null ? evo : { name: evo };
+                    const evoName = evoObj.name;
                     if (!evoName) return null;
+                    const matchedEvo = lookupDigimon?.(evoObj);
+                    const fullEvo = matchedEvo ? { ...evoObj, ...matchedEvo } : evoObj;
+                    const hasImg = Boolean(fullEvo.localImageUrl || fullEvo.imageUrl);
+
                     return (
                       <button
                         key={`${evoName}-${idx}`}
@@ -302,7 +313,8 @@ export function RelatedItem({ item, onSelectParent }) {
                           onSelectParent?.(evoName);
                         }}
                       >
-                        {evoName}
+                        {hasImg && <DigimonImage item={fullEvo} className="sub-badge-image" />}
+                        <span>{evoName}</span>
                       </button>
                     );
                   })}
