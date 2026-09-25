@@ -1,19 +1,25 @@
-// @ts-nocheck
-'use client';
+'use client'
 
-export function hasValue(val) {
-  if (val === undefined || val === null) return false;
-  if (typeof val === 'string') return val.trim().length > 0;
-  if (Array.isArray(val)) return val.length > 0;
-  if (typeof val === 'object') return Object.keys(val).length > 0;
-  return true;
+import type { Digimon } from '@/types/DigimonTypes'
+
+export function hasValue<T>(val: T | null | undefined): boolean {
+  if (val === undefined || val === null) return false
+  if (typeof val === 'string') return val.trim().length > 0
+  if (Array.isArray(val)) return val.length > 0
+  if (typeof val === 'object') return Object.keys(val).length > 0
+  return true
 }
 
-export function DigimonMetadataGrid({ digimon, className = 'related-metadata-grid' }) {
-  if (!digimon) return null;
+interface DigimonMetadataGridProps {
+  digimon?: Digimon | null
+  className?: string
+}
 
-  const level = digimon.level || digimon.generation;
-  const releaseDate = digimon.releaseDate || digimon.release_date;
+export function DigimonMetadataGrid({ digimon, className = 'related-metadata-grid' }: DigimonMetadataGridProps) {
+  if (!digimon) return null
+
+  const level = digimon.level || digimon.generation
+  const releaseDate = digimon.releaseDate || digimon.release_date
 
   return (
     <div className={className}>
@@ -66,5 +72,5 @@ export function DigimonMetadataGrid({ digimon, className = 'related-metadata-gri
         </div>
       )}
     </div>
-  );
+  )
 }

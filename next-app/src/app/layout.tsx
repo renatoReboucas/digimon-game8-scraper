@@ -1,5 +1,5 @@
-// @ts-nocheck
-import './globals.css';
+import type { ReactNode } from 'react'
+import './globals.css'
 
 export const metadata = {
   title: 'Digimon Atlas',
@@ -7,12 +7,12 @@ export const metadata = {
   icons: {
     icon: '/favicon.ico',
   },
-};
+}
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body>{children}</body>
     </html>
-  );
+  )
 }

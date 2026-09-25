@@ -1,33 +1,28 @@
-// @ts-nocheck
-'use client';
+'use client'
 
-import { ChevronUp } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChevronUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export function ScrollToTop() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 250) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
+      setIsVisible(window.scrollY > 250)
+    }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
 
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
-    });
-  };
+    })
+  }
 
   return (
     <button
@@ -39,5 +34,5 @@ export function ScrollToTop() {
     >
       <ChevronUp aria-hidden="true" size={22} strokeWidth={2.2} />
     </button>
-  );
+  )
 }

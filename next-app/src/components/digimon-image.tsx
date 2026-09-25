@@ -1,14 +1,19 @@
-// @ts-nocheck
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
+import type { Digimon } from '@/types/DigimonTypes'
 
-function imageSource(item) {
-  return item.localImageUrl || item.imageUrl || '';
+function imageSource(item: Pick<Digimon, 'localImageUrl' | 'imageUrl'>): string {
+  return item.localImageUrl || item.imageUrl || ''
 }
 
-export function DigimonImage({ item, className }) {
-  const [source, setSource] = useState(imageSource(item));
+interface DigimonImageProps {
+  item: Pick<Digimon, 'name' | 'localImageUrl' | 'imageUrl'>
+  className?: string
+}
+
+export function DigimonImage({ item, className }: DigimonImageProps) {
+  const [source, setSource] = useState<string>(imageSource(item))
 
   return (
     <img
@@ -17,8 +22,8 @@ export function DigimonImage({ item, className }) {
       alt={item.name || 'Digimon'}
       loading="lazy"
       onError={() => {
-        if (source !== item.imageUrl && item.imageUrl) setSource(item.imageUrl);
+        if (source !== item.imageUrl && item.imageUrl) setSource(item.imageUrl)
       }}
     />
-  );
+  )
 }

@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
+import type { Digimon, DigimonLookupInput } from '@/types/DigimonTypes';
 import { hasValue } from './digimon-metadata-grid';
 
-function createLookup(digimons) {
-  const byName = new Map();
-  const byUrl = new Map();
-  const byId = new Map();
+function createLookup(digimons: Digimon[]) {
+  const byName = new Map<string, Digimon>();
+  const byUrl = new Map<string, Digimon>();
+  const byId = new Map<string, Digimon>();
 
   for (const d of digimons) {
     if (!d) continue;
@@ -13,7 +14,7 @@ function createLookup(digimons) {
     if (d.id != null) byId.set(String(d.id).trim(), d);
   }
 
-  return (item) => {
+  return (item: DigimonLookupInput): Digimon | null => {
     if (!item) return null;
     if (item.name) {
       const found = byName.get(item.name.trim().toLowerCase());

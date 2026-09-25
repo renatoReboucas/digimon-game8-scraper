@@ -1,14 +1,24 @@
-// @ts-nocheck
-'use client';
+'use client'
 
-import { ChevronDown, ChevronUp, Funnel, Star } from 'lucide-react';
-import { DigimonImage } from './digimon-image';
-import { DigimonMetadataGrid } from './digimon-metadata-grid';
-import { EvolutionSection } from './evolution-section';
-import { Link } from './link';
+import { ChevronDown, ChevronUp, Funnel, Star } from 'lucide-react'
+import type { Digimon } from '@/types/DigimonTypes'
+import { DigimonImage } from './digimon-image'
+import { DigimonMetadataGrid } from './digimon-metadata-grid'
+import { EvolutionSection } from './evolution-section'
+import { Link } from './link'
 
-export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, onToggleExpanded, onSelectParent }) {
-  const relations = item.Digivolutions || { evolutions: [], deEvolutions: [] };
+interface DigimonCardProps {
+  item: Digimon
+  isFavorite: boolean
+  isExpanded: boolean
+  onToggleFavorite: (id: string | number) => void
+  onToggleExpanded: (id: string | number) => void
+  onSelectParent?: (name: string) => void
+}
+
+export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, onToggleExpanded, onSelectParent }: DigimonCardProps) {
+  const cardId = String(item.id ?? item.url ?? item.name ?? '')
+  const relations = item.Digivolutions ?? { evolutions: [], deEvolutions: [] }
 
   return (
     <article className="digimon-card">
@@ -18,12 +28,12 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
         tabIndex={0}
         aria-expanded={isExpanded}
         onClick={(event) => {
-          if (!event.target.closest('button, a')) onToggleExpanded(item.id);
+          if (!(event.target as HTMLElement).closest('button, a')) onToggleExpanded(cardId)
         }}
         onKeyDown={(event) => {
           if ((event.key === 'Enter' || event.key === ' ') && event.target === event.currentTarget) {
-            event.preventDefault();
-            onToggleExpanded(item.id);
+            event.preventDefault()
+            onToggleExpanded(cardId)
           }
         }}
       >
@@ -38,8 +48,8 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
               title={`Filtrar ${item.name} na busca`}
               aria-label={`Filtrar ${item.name} na barra de busca`}
               onClick={(event) => {
-                event.stopPropagation();
-                onSelectParent?.(item.name);
+                event.stopPropagation()
+                onSelectParent?.(item.name ?? '')
               }}
             >
               <Funnel aria-hidden="true" size={15} strokeWidth={1.8} />
@@ -57,7 +67,7 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
             title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
             aria-pressed={isFavorite}
             aria-label={`${isFavorite ? 'Desfavoritar' : 'Favoritar'} ${item.name}`}
-            onClick={() => onToggleFavorite(item.id)}
+            onClick={() => onToggleFavorite(cardId)}
           >
             <Star aria-hidden="true" size={17} fill={isFavorite ? 'currentColor' : 'none'} strokeWidth={1.8} />
             <span>{isFavorite ? 'Desfavoritar' : 'Favoritar'}</span>
@@ -75,11 +85,11 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
       </div>
       {isExpanded && (
         <div className="evolution-details">
-          <EvolutionSection title="Evolutions" items={relations.evolutions || []} onSelectParent={onSelectParent} />
+          <EvolutionSection title="Evolutions" items={relations.evolutions ?? []} onSelectParent={onSelectParent} />
           <div className="divider" role="separator" />
-          <EvolutionSection title="De-evolutions" items={relations.deEvolutions || []} onSelectParent={onSelectParent} />
+          <EvolutionSection title="De-evolutions" items={relations.deEvolutions ?? []} onSelectParent={onSelectParent} />
         </div>
       )}
     </article>
-  );
+  )
 }
