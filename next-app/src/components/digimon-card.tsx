@@ -3,6 +3,7 @@
 
 import { ChevronDown, ChevronUp, Funnel, Star } from 'lucide-react';
 import { DigimonImage } from './digimon-image';
+import { DigimonMetadataGrid } from './digimon-metadata-grid';
 import { EvolutionSection } from './evolution-section';
 import { Game8Link } from './game8-link';
 
@@ -66,10 +67,11 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
           </span>
         </div>
       </div>
-      <div className="card-meta">
-        <span>Base Personality: {item.basePersonality}</span>
-        <span>Agent Rank Req.: {item.agentRankReq}</span>
-        <Game8Link item={item} />
+      <div className="card-meta-section">
+        <DigimonMetadataGrid digimon={item} className="parent-metadata-grid" />
+        <div className="card-meta-footer">
+          <Game8Link item={item} />
+        </div>
       </div>
       {isExpanded && (
         <div className="evolution-details">

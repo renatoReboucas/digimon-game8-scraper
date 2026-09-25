@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { hasValue } from './digimon-metadata-grid';
 
 function createLookup(digimons) {
   const byName = new Map();
@@ -28,14 +29,6 @@ function createLookup(digimons) {
     }
     return null;
   };
-}
-
-function hasValue(val) {
-  if (val === undefined || val === null) return false;
-  if (typeof val === 'string') return val.trim().length > 0;
-  if (Array.isArray(val)) return val.length > 0;
-  if (typeof val === 'object') return Object.keys(val).length > 0;
-  return true;
 }
 
 describe('Digimon Lookup from main JSON', () => {

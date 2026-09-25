@@ -320,6 +320,25 @@ h1 {
   text-align: center;
 }
 
+.card-meta-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 18px 15px 18px;
+}
+
+.parent-metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.card-meta-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .card-meta {
   display: flex;
   flex-wrap: wrap;
@@ -667,6 +686,10 @@ h1 {
 
   .identity h2 {
     font-size: 1.1rem;
+  }
+
+  .card-meta-section {
+    padding: 0 12px 13px 12px;
   }
 
   .card-meta {
