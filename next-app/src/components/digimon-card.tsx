@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import { ChevronDown, ChevronUp, Search, Star } from 'lucide-react';
+import { ChevronDown, ChevronUp, Funnel, Star } from 'lucide-react';
 import { DigimonImage } from './digimon-image';
 import { EvolutionSection } from './evolution-section';
 import { Game8Link } from './game8-link';
@@ -29,26 +29,27 @@ export function DigimonCard({ item, isFavorite, isExpanded, onToggleFavorite, on
         <DigimonImage item={item} className="main-image" />
         <div className="identity">
           <span className="card-index">No. {item.number}</span>
-          <h2>{item.name}</h2>
+          <div className="title-row">
+            <h2>{item.name}</h2>
+            <button
+              className="name-filter-button"
+              type="button"
+              title={`Filtrar ${item.name} na busca`}
+              aria-label={`Filtrar ${item.name} na barra de busca`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelectParent?.(item.name);
+              }}
+            >
+              <Funnel aria-hidden="true" size={15} strokeWidth={1.8} />
+            </button>
+          </div>
           <div className="tags">
             <span>{item.attribute}</span>
             <span>{item.generation}</span>
           </div>
         </div>
         <div className="card-actions">
-          <button
-            className="search-parent-button"
-            type="button"
-            title={`Pesquisar ${item.name} na busca`}
-            aria-label={`Pesquisar ${item.name} na barra de busca`}
-            onClick={(event) => {
-              event.stopPropagation();
-              onSelectParent?.(item.name);
-            }}
-          >
-            <Search aria-hidden="true" size={15} strokeWidth={1.8} />
-            <span>Buscar</span>
-          </button>
           <button
             className={`favorite-button${isFavorite ? ' is-favorite' : ''}`}
             type="button"

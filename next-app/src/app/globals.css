@@ -198,10 +198,43 @@ h1 {
   object-fit: contain;
 }
 
-.identity h2 {
+.title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin: 3px 0 7px;
+}
+
+.title-row h2 {
+  margin: 0;
   font-size: 1.35rem;
   font-weight: 500;
+}
+
+.name-filter-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(18, 26, 38, .7);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s, transform .15s;
+}
+
+.name-filter-button:hover {
+  border-color: var(--accent);
+  background: rgba(98, 214, 178, .12);
+  color: var(--accent-strong);
+  transform: scale(1.08);
+}
+
+.name-filter-button:active {
+  transform: scale(0.95);
 }
 
 .card-index {
@@ -232,8 +265,7 @@ h1 {
 
 .game8-link,
 .favorite-button,
-.parent-filter-button,
-.search-parent-button {
+.parent-filter-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -251,17 +283,6 @@ h1 {
 
 .game8-link {
   gap: 5px;
-}
-
-.search-parent-button {
-  gap: 6px;
-  color: var(--accent);
-}
-
-.search-parent-button:hover {
-  border-color: var(--accent);
-  background: rgba(98, 214, 178, .12);
-  color: var(--accent-strong);
 }
 
 .game8-link:hover,
@@ -689,10 +710,8 @@ h1 {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .search-parent-button {
-    gap: 4px;
-    padding: 6px 8px;
-    font-size: .68rem;
+  .title-row h2 {
+    font-size: 1.1rem;
   }
 
   .related-expanded-details {
