@@ -6,6 +6,7 @@ export const FAVORITES_CONSENT_STORAGE_KEY = 'digimon-atlas:favorites-consent:v1
 export type FavoritesConsent = 'unknown' | 'granted' | 'denied'
 
 interface FavoritesState {
+  initialized: boolean
   consent: FavoritesConsent
   favoriteIds: Set<string>
   initialize: () => void
@@ -46,6 +47,7 @@ function clearStoredFavorites() {
 }
 
 export const useFavoritesStore = create<FavoritesState>((set, get) => ({
+  initialized: false,
   consent: 'unknown',
   favoriteIds: new Set<string>(),
   initialize: () => {
@@ -53,16 +55,16 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     const favoriteIds = consent === 'granted' ? readFavorites() : new Set<string>()
 
     if (consent === 'denied') clearStoredFavorites()
-    set({ consent, favoriteIds })
+    set({ initialized: true, consent, favoriteIds })
   },
   grantConsent: () => {
     writeConsent('granted')
-    set({ consent: 'granted', favoriteIds: readFavorites() })
+    set({ initialized: true, consent: 'granted', favoriteIds: readFavorites() })
   },
   denyConsent: () => {
     writeConsent('denied')
     clearStoredFavorites()
-    set({ consent: 'denied', favoriteIds: new Set<string>() })
+    set({ initialized: true, consent: 'denied', favoriteIds: new Set<string>() })
   },
   toggleFavorite: (id) => {
     if (get().consent !== 'granted') return false

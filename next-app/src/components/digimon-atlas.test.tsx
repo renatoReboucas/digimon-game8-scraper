@@ -6,6 +6,7 @@ import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Digimon } from '@/types/DigimonTypes'
 import { FAVORITES_STORAGE_KEY } from './lib/favorites'
+import { FAVORITES_CONSENT_STORAGE_KEY } from './lib/favorites-store'
 import { useFavoritesStore } from './lib/favorites-store'
 import DigimonAtlas from './digimon-atlas'
 import { renderWithTooltip as render } from '../test/test-utils'
@@ -26,7 +27,7 @@ function renderAtlas(items = digimons, loadError = '', onUrlUpdate = vi.fn()) {
 
 beforeEach(() => {
   window.localStorage.clear()
-  useFavoritesStore.setState({ consent: 'unknown', favoriteIds: new Set<string>() })
+  useFavoritesStore.setState({ initialized: false, consent: 'unknown', favoriteIds: new Set<string>() })
 })
 
 describe('DigimonAtlas', () => {
@@ -83,6 +84,14 @@ describe('DigimonAtlas', () => {
 
     await user.click(favoritesSwitch)
     expect(await screen.findByRole('heading', { level: 2, name: 'Agumon' })).toBeInTheDocument()
+  })
+
+  it('restaura o consentimento persistido sem exibir novamente o pedido', () => {
+    window.localStorage.setItem(FAVORITES_CONSENT_STORAGE_KEY, 'granted')
+    renderAtlas()
+
+    expect(screen.queryByRole('heading', { level: 2, name: 'Salvar favoritos neste navegador?' })).not.toBeInTheDocument()
+    expect(screen.getByText('Favoritos salvos neste navegador.')).toBeInTheDocument()
   })
 
   it('pede autorização ao favoritar sem consentimento e só salva após aceitar', async () => {

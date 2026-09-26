@@ -5,6 +5,7 @@ import { Button } from './ui/button'
 import type { FavoritesConsent as FavoritesConsentState } from './lib/favorites-store'
 
 interface FavoritesConsentProps {
+  initialized: boolean
   consent: FavoritesConsentState
   requestOpen: boolean
   onAccept: () => void
@@ -12,8 +13,10 @@ interface FavoritesConsentProps {
   onRequest: () => void
 }
 
-export function FavoritesConsent({ consent, requestOpen, onAccept, onDecline, onRequest }: FavoritesConsentProps) {
+export function FavoritesConsent({ initialized, consent, requestOpen, onAccept, onDecline, onRequest }: FavoritesConsentProps) {
   const [confirmRevocation, setConfirmRevocation] = useState(false)
+
+  if (!initialized) return null
 
   if (consent === 'unknown' || requestOpen) {
     return (

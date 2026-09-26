@@ -5,7 +5,7 @@ import { FAVORITES_CONSENT_STORAGE_KEY, useFavoritesStore } from './favorites-st
 
 beforeEach(() => {
   window.localStorage.clear()
-  useFavoritesStore.setState({ consent: 'unknown', favoriteIds: new Set<string>() })
+  useFavoritesStore.setState({ initialized: false, consent: 'unknown', favoriteIds: new Set<string>() })
 })
 
 describe('favorites consent store', () => {
@@ -14,6 +14,7 @@ describe('favorites consent store', () => {
     useFavoritesStore.getState().initialize()
 
     expect(useFavoritesStore.getState().consent).toBe('unknown')
+    expect(useFavoritesStore.getState().initialized).toBe(true)
     expect(useFavoritesStore.getState().favoriteIds).toEqual(new Set())
     expect(useFavoritesStore.getState().toggleFavorite('2')).toBe(false)
     expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe('["1"]')
@@ -36,6 +37,7 @@ describe('favorites consent store', () => {
     useFavoritesStore.getState().initialize()
 
     expect(useFavoritesStore.getState().consent).toBe('granted')
+    expect(useFavoritesStore.getState().initialized).toBe(true)
     expect(useFavoritesStore.getState().favoriteIds).toEqual(new Set(['1']))
   })
 

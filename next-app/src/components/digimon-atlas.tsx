@@ -35,6 +35,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   const [showFavorites, setShowFavorites] = useState<boolean>(false)
   const deferredShowFavorites = useDeferredValue(showFavorites)
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds)
+  const favoritesInitialized = useFavoritesStore((state) => state.initialized)
   const consent = useFavoritesStore((state) => state.consent)
   const initializeFavorites = useFavoritesStore((state) => state.initialize)
   const grantConsent = useFavoritesStore((state) => state.grantConsent)
@@ -180,6 +181,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
             <span>Apenas favoritos</span>
           </label>
           <FavoritesConsent
+            initialized={favoritesInitialized}
             consent={consent}
             requestOpen={requestConsent}
             onAccept={acceptFavoriteConsent}
