@@ -535,13 +535,15 @@
   gap: 0.35rem;
 }
 
-.tags .badge,
-.related-quick-tags .badge {
+  .tags .badge,
+  .related-quick-tags .badge {
   min-height: 1.25rem;
   padding: 0.1rem 0.45rem;
   font-size: 0.65rem;
   font-weight: 500;
-}
+  white-space: nowrap;
+  flex-shrink: 0;
+  }
 
 .card-actions {
   display: flex;
