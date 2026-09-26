@@ -11,9 +11,10 @@ function imageSource(item: Pick<Digimon, 'localImageUrl' | 'imageUrl'>): string 
 interface DigimonImageProps {
   item: Pick<Digimon, 'name' | 'localImageUrl' | 'imageUrl'>
   className?: string
+  priority?: boolean
 }
 
-export function DigimonImage({ item, className }: DigimonImageProps) {
+export function DigimonImage({ item, className, priority = false }: DigimonImageProps) {
   const [source, setSource] = useState<string>(imageSource(item))
   const sizes = className === 'main-image'
     ? '(max-width: 560px) 60px, 80px'
@@ -35,7 +36,9 @@ export function DigimonImage({ item, className }: DigimonImageProps) {
       width={160}
       height={160}
       sizes={sizes}
-      loading="lazy"
+      priority={priority}
+      loading={priority ? undefined : 'lazy'}
+      decoding="async"
       onError={() => {
         if (source !== item.imageUrl && item.imageUrl) setSource(item.imageUrl)
       }}

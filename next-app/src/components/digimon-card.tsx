@@ -18,12 +18,13 @@ interface DigimonCardProps {
   isFavorite: boolean
   canSaveFavorites?: boolean
   initiallyExpanded: boolean
+  imagePriority?: boolean
   onToggleFavorite: (id: string | number) => void
   onExpandedChange: (id: string | number, expanded: boolean) => void
   onSelectParent?: (name: string) => void
 }
 
-function DigimonCardComponent({ item, isFavorite, canSaveFavorites = true, initiallyExpanded, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
+function DigimonCardComponent({ item, isFavorite, canSaveFavorites = true, initiallyExpanded, imagePriority = false, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
   const [isExpanded, setIsExpanded] = useState(initiallyExpanded)
   const { panelRef, isPanelVisible } = useAnimeDisclosure(isExpanded, initiallyExpanded)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -54,7 +55,7 @@ function DigimonCardComponent({ item, isFavorite, canSaveFavorites = true, initi
     >
       <div className="digimon-accordion-item" ref={contentRef}>
         <div className="card-header">
-          <DigimonImage item={item} className="main-image" />
+          <DigimonImage item={item} className="main-image" priority={imagePriority} />
           <div className="identity">
             {item.number != null && <Badge variant="outline" className="card-index">No. {item.number}</Badge>}
             <div className="title-row">

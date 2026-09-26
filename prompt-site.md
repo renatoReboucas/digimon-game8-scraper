@@ -1,20 +1,21 @@
-# Prompt de Referência: Digimon Atlas
+# Briefing de Implementação: Nova UI do Digimon Atlas
 
 ## Objetivo
 
-Use este prompt para reconstruir, aprimorar ou descrever a interface principal do **Digimon Atlas**, um catálogo interativo de Digimon e suas relações evolutivas. Preserve a estrutura e os comportamentos abaixo. Não invente páginas ou funcionalidades que não estejam especificadas.
+Implemente uma **nova interface completa** para o **Digimon Atlas**, um catálogo interativo de Digimon e suas relações evolutivas. Este documento é um briefing de implementação, não um pedido para documentar, copiar ou apenas polir a interface existente.
 
-## Identidade Visual
+Antes de alterar o código, examine a aplicação Next.js existente para entender os dados, componentes, testes e comportamentos já disponíveis. Preserve a identidade do Digimon Atlas e todos os requisitos funcionais descritos abaixo, mas crie uma direção visual e uma composição novas. Não reproduza o layout, a paleta ou a aparência atual pixel por pixel. Não entregue apenas um mockup: implemente a experiência interativa real no app.
 
-- Crie uma interface de catálogo, não uma landing page de marketing.
-- Use tema escuro: fundo azul-marinho quase preto com um brilho radial discreto no alto à direita, superfícies de cards ligeiramente mais claras e bordas suaves.
-- Use verde/teal como cor primária e de foco; reserve dourado para estados de favorito e use coral para ações destrutivas.
-- O texto principal é claro e o texto secundário tem contraste mais suave.
-- Use tipografia sem serifa para a interface e uma serifada editorial nos títulos principais e títulos de seção, como na identidade atual.
-- Mantenha espaçamento compacto, hierarquia clara e cards com cantos discretamente arredondados. A página é centralizada, tem largura máxima aproximada de 78rem e rolagem vertical.
-- Evite decoração que concorra com o catálogo. O conteúdo dos Digimon deve ser o foco.
+## Direção para a Nova UI
 
-## Estrutura da Página
+- Projete uma linguagem visual original, coerente com um atlas/enciclopédia de Digimon e reconhecível como parte do produto.
+- Escolha uma paleta, tipografia, composição, hierarquia, espaçamento, superfícies e estados interativos novos. Defina tokens ou variáveis CSS para manter consistência.
+- Faça escolhas visuais intencionais e distintas; não recorra a um dashboard genérico ou a uma landing page promocional. O catálogo utilizável deve ser a experiência principal já na primeira tela.
+- Use as imagens reais dos Digimon disponíveis nos dados como conteúdo visual central. Não as substitua por ilustrações decorativas ou placeholders quando houver imagens válidas.
+- Mantenha texto legível, contraste adequado e componentes compactos o bastante para facilitar busca, comparação e uso repetido.
+- Reorganize livremente os elementos da página e dos cards, desde que todos os conteúdos e controles funcionais especificados continuem claros e acessíveis.
+
+## Conteúdo e Hierarquia Funcional
 
 1. **Cabeçalho do catálogo**
    - Uma pequena identificação acima do título: “Digimon Story Time Stranger”.
@@ -25,8 +26,8 @@ Use este prompt para reconstruir, aprimorar ou descrever a interface principal d
    - Contagem de Digimon encontrados e total de favoritos.
 
 2. **Lista do catálogo**
-   - Apresente os resultados como uma lista vertical de cards, em uma única coluna.
-   - Cada card começa com imagem do Digimon, número quando disponível, nome, indicador para expandir, tags de atributo/geração e ações de contexto.
+   - Apresente os resultados em uma composição adequada à nova direção visual, sem obrigação de repetir a lista vertical atual.
+   - Cada item deve comunicar imagem, número quando disponível, nome, atributo/geração e ações para expandir, filtrar e favoritar.
    - Inclua uma grade de metadados apenas para os campos disponíveis e um link para a página correspondente no Game8.
    - As imagens devem priorizar o arquivo local, recorrer à URL remota se a imagem local falhar e manter texto alternativo com o nome do Digimon.
 
@@ -70,7 +71,7 @@ Use este prompt para reconstruir, aprimorar ou descrever a interface principal d
 ## Responsividade, Acessibilidade e Movimento
 
 - Faça o layout funcionar em desktop e mobile sem overflow horizontal.
-- Em telas pequenas, reduza espaçamentos e imagens dos cards, empilhe as seções evolutivas e mantenha ações essenciais acessíveis. Use ícones compactos para favoritos, mas preserve nomes acessíveis para leitores de tela.
+- Em telas pequenas, adapte navegação, filtros, cards e relações à largura disponível; mantenha ações essenciais visíveis ou facilmente alcançáveis. Use ícones compactos quando apropriado, sempre com nomes acessíveis.
 - Use elementos semânticos, títulos em ordem lógica, labels para campos, nomes acessíveis para botões e estados como `aria-expanded`, `aria-pressed` e `aria-busy` quando forem pertinentes.
 - Garanta que os controles funcionem por teclado, mantenham foco visível e que links externos sejam seguros.
 - Carregue imagens de forma preguiçosa e trate falhas com fallback apropriado.
@@ -82,3 +83,11 @@ Use este prompt para reconstruir, aprimorar ou descrever a interface principal d
 - Os dados podem ser esparsos: número, imagem, nível, atributo, descrição, personalidade, classificação, data de lançamento, Fields, Skills e relações podem faltar. Renderize apenas valores presentes e aceite aliases conhecidos, sem exibir campos vazios ou inventar informações.
 - O escopo é a experiência principal em Next.js do Digimon Atlas. Não inclua a CLI, o processo de scraping nem a interface web legada do diretório `scrape/` como partes desta página.
 - Não adicione autenticação, contas, sincronização de favoritos entre dispositivos, páginas de detalhe independentes ou outras funções não descritas.
+
+## Implementação no Projeto Existente
+
+- Implemente a nova UI dentro de `next-app/`, respeitando a arquitetura Next.js, React e TypeScript já configurada.
+- Reaproveite os tipos, a API, o carregamento de dados, o store de favoritos, a lógica de busca e os componentes úteis existentes. Atualize ou componha esses componentes quando necessário; não duplique regras de negócio para facilitar o redesenho.
+- Mantenha contratos existentes, incluindo `GET /api/digimons`, o parâmetro de busca `q`, a persistência local consentida e os estados de carregamento e erro.
+- Use os componentes e bibliotecas de UI já instalados quando forem adequados. Evite adicionar dependências sem necessidade.
+- Atualize os testes relevantes para cobrir os fluxos preservados e rode os testes focados e o typecheck do app ao concluir.
