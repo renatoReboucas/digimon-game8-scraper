@@ -639,8 +639,12 @@
 .parent-metadata-grid,
 .related-metadata-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.45rem 0.7rem;
+}
+
+.related-metadata-grid {
+  align-items: start;
 }
 
 .parent-metadata-grid {
@@ -648,10 +652,11 @@
 }
 
 .metadata-item {
-  display: flex;
+  display: grid;
   min-width: 0;
-  flex-direction: column;
-  gap: 0.2rem;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.35rem;
 }
 
 .metadata-label {
