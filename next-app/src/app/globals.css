@@ -826,7 +826,8 @@
 
 .related-content {
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
+  overflow: visible;
 }
 
 .related-quick-tags {
@@ -1407,7 +1408,10 @@ body {
 }
 
 .related-name {
-  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
   overflow: visible;
   text-overflow: clip;
 }
