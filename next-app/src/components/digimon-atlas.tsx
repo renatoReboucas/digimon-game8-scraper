@@ -211,13 +211,14 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
             </Card>
           ))}
           {!isListPending && !loadError && !filtered.length ? <p className="page-empty">{emptyMessage}</p> : null}
-          {!isListPending && !loadError && filtered.map((item) => {
+          {!isListPending && !loadError && filtered.map((item, index) => {
             const itemId = String(item.id ?? item.url ?? item.name ?? 'item')
 
             return (
               <DigimonCard
                 key={itemId}
                 item={item}
+                imagePriority={index < 4}
                 isFavorite={favoriteIds.has(String(item.id))}
                 canSaveFavorites={consent === 'granted'}
                 initiallyExpanded={expandedIds.current.has(itemId)}
