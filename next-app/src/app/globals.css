@@ -1289,6 +1289,33 @@ body {
   overflow-wrap: normal;
 }
 
+/* Related cards keep a usable reading width instead of shrinking into letter columns. */
+.related-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  align-items: start;
+}
+
+.related-item {
+  min-width: 0;
+  width: 100%;
+}
+
+.related-name {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.related-summary {
+  min-width: 0;
+}
+
+@container (max-width: 520px) {
+  .related-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .digimon-card { transition: none; }
 }
