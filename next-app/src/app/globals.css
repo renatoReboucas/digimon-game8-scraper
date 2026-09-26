@@ -1539,12 +1539,13 @@ body {
 
 .related-name {
   display: block;
-  width: max-content;
-  max-width: none;
-  white-space: nowrap;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
   word-break: normal;
 }
 
