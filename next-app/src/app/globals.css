@@ -598,6 +598,7 @@
 
 .evolution-section {
   min-width: 0;
+  container-type: inline-size;
 }
 
 .evolution-section h3 {
@@ -628,6 +629,20 @@
   align-items: center;
   gap: 0.55rem;
   padding: 0.45rem 0.6rem;
+}
+
+@container (max-width: 320px) {
+  .related-header {
+    flex-wrap: wrap;
+  }
+
+  .related-summary {
+    flex-basis: 100%;
+  }
+
+  .related-actions {
+    margin-left: auto;
+  }
 }
 
 .related-summary {
@@ -665,6 +680,12 @@
 .related-content {
   min-width: 0;
   flex: 1;
+}
+
+.related-quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
 }
 
 .related-name {

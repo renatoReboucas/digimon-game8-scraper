@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { fireEvent, screen } from '@testing-library/react'
+import type { ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { renderWithTooltip as render } from '../test/test-utils'
 import { EvolutionSection } from './evolution-section'
@@ -9,13 +10,21 @@ import { DigimonImage } from './digimon-image'
 import { DigimonMetadataGrid } from './digimon-metadata-grid'
 import { ScrollToTop } from './scroll-to-top'
 
+vi.mock('next/image', async () => {
+  const { createElement } = await import('react')
+  return {
+    default: (props: ComponentProps<'img'>) => createElement('img', props),
+  }
+})
+
 describe('DigimonImage', () => {
   it('usa a imagem local e recorre à URL remota quando ela falha', () => {
-    render(<DigimonImage item={{ name: 'Agumon', localImageUrl: '/images/agumon.png', imageUrl: 'https://img.test/agumon.png' }} />)
+    render(<DigimonImage item={{ name: 'Agumon', localImageUrl: '/images/agumon.png', imageUrl: 'https://img.test/agumon.png' }} className="main-image" />)
 
     const image = screen.getByRole('img', { name: 'Agumon' })
     expect(image).toHaveAttribute('src', '/images/agumon.png')
     expect(image).toHaveAttribute('loading', 'lazy')
+    expect(image).toHaveAttribute('sizes', '(max-width: 560px) 60px, 80px')
 
     fireEvent.error(image)
     expect(image).toHaveAttribute('src', 'https://img.test/agumon.png')
@@ -27,10 +36,10 @@ describe('DigimonImage', () => {
     expect(screen.getByRole('img', { name: 'Gabumon' })).toHaveAttribute('src', 'https://img.test/gabumon.png')
   })
 
-  it('não define uma origem vazia quando não existem imagens', () => {
+  it('renderiza um placeholder acessível quando não existem imagens', () => {
     render(<DigimonImage item={{ name: 'Patamon' }} />)
 
-    expect(screen.getByRole('img', { name: 'Patamon' })).not.toHaveAttribute('src')
+    expect(screen.getByRole('img', { name: 'Patamon' }).tagName).toBe('SPAN')
   })
 })
 
