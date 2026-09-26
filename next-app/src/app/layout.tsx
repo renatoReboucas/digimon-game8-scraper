@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Analytics } from '@vercel/analytics/next'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import './globals.css'
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </TooltipProvider>
         </NuqsAdapter>
+        <Analytics />
       </body>
     </html>
   )

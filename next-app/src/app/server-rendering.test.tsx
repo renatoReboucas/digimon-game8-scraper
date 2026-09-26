@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
+import { Analytics } from '@vercel/analytics/next'
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -12,6 +13,9 @@ import Loading from './loading'
 vi.mock('@/lib/digimon-data', () => ({ loadDigimonData: vi.fn() }))
 vi.mock('nuqs/adapters/next/app', () => ({
   NuqsAdapter: ({ children }: { children: ReactNode }) => <>{children}</>,
+}))
+vi.mock('@vercel/analytics/next', () => ({
+  Analytics: () => <span data-testid="vercel-analytics" />,
 }))
 
 const loadData = vi.mocked(loadDigimonData)
@@ -55,6 +59,7 @@ describe('RootLayout', () => {
 
     expect(document.documentElement).toHaveAttribute('lang', 'pt-BR')
     expect(screen.getByText('Conteúdo da página')).toBeInTheDocument()
+    expect(screen.getByTestId('vercel-analytics')).toBeInTheDocument()
     expect(metadata.title).toBe('Digimon Atlas | Catálogo de Digimon e evoluções')
     expect(metadata.description).toBe('Pesquise o catálogo de Digimon, consulte atributos e explore evoluções e de-evoluções.')
   })

@@ -258,6 +258,84 @@
   min-height: 1.5rem;
 }
 
+.favorites-consent,
+.favorites-consent-status {
+  width: min(100%, 42rem);
+  margin-top: 1rem;
+}
+
+.favorites-consent {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding: 0.6rem 0.75rem;
+  border-inline-start: 2px solid hsl(var(--primary));
+}
+
+.favorites-consent-copy h2 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.favorites-consent-copy p {
+  max-width: 56ch;
+  margin: 0.25rem 0 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.favorites-consent-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.favorites-consent-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8rem;
+}
+
+.favorites-consent-manage summary {
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.favorites-consent-manage summary:focus-visible {
+  border-radius: 0.125rem;
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+.favorites-consent-manage-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  width: min(100vw - 2rem, 30rem);
+  margin-top: 0.5rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.favorites-consent-manage-panel p {
+  flex-basis: 100%;
+  margin: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 .digimon-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -489,6 +567,10 @@
 
 .favorite-button.is-favorite {
   color: hsl(var(--favorite));
+}
+
+.favorite-button.needs-consent {
+  cursor: not-allowed;
 }
 
 .card-meta-section {
@@ -903,6 +985,15 @@
   .subtitle {
     max-width: 24rem;
     font-size: 0.9rem;
+  }
+
+  .favorites-consent {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .favorites-consent-actions {
+    justify-content: flex-start;
   }
 
   .card-header {

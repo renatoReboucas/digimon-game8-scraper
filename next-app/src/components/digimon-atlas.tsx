@@ -14,7 +14,8 @@ import { Switch } from './ui/switch'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { DigimonCard } from './digimon-card'
 import { DigimonProvider } from './digimon-context'
-import { readFavorites, saveFavorites } from './lib/favorites'
+import { FavoritesConsent } from './favorites-consent'
+import { useFavoritesStore } from './lib/favorites-store'
 import { ScrollToTop } from './scroll-to-top'
 import { animatePageScroll } from './anime-animations'
 
@@ -33,14 +34,19 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   const deferredQuery = useDeferredValue(query)
   const [showFavorites, setShowFavorites] = useState<boolean>(false)
   const deferredShowFavorites = useDeferredValue(showFavorites)
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set<string>())
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds)
+  const consent = useFavoritesStore((state) => state.consent)
+  const initializeFavorites = useFavoritesStore((state) => state.initialize)
+  const grantConsent = useFavoritesStore((state) => state.grantConsent)
+  const denyConsent = useFavoritesStore((state) => state.denyConsent)
+  const toggleStoredFavorite = useFavoritesStore((state) => state.toggleFavorite)
   const expandedIds = useRef<Set<string>>(new Set<string>())
   const scrollAnimation = useRef<ReturnType<typeof animatePageScroll>>(null)
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null)
+  const [requestConsent, setRequestConsent] = useState(false)
+  const [pendingFavoriteId, setPendingFavoriteId] = useState<string | number | null>(null)
 
-  useEffect(() => {
-    setFavoriteIds(readFavorites())
-  }, [])
+  useEffect(() => initializeFavorites(), [initializeFavorites])
 
   useEffect(() => {
     setQuery(urlQuery)
@@ -66,13 +72,26 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   }
 
   const toggleFavorite = useCallback((id: string | number) => {
-    const next = new Set(favoriteIds)
-    const normalizedId = String(id)
-    if (next.has(normalizedId)) next.delete(normalizedId)
-    else next.add(normalizedId)
-    setFavoriteIds(next)
-    saveFavorites(next)
-  }, [favoriteIds])
+    if (consent !== 'granted') {
+      setPendingFavoriteId(id)
+      setRequestConsent(true)
+      return
+    }
+    toggleStoredFavorite(id)
+  }, [consent, toggleStoredFavorite])
+
+  function acceptFavoriteConsent() {
+    grantConsent()
+    setRequestConsent(false)
+    if (pendingFavoriteId !== null) toggleStoredFavorite(pendingFavoriteId)
+    setPendingFavoriteId(null)
+  }
+
+  function declineFavoriteConsent() {
+    denyConsent()
+    setRequestConsent(false)
+    setPendingFavoriteId(null)
+  }
 
   const setExpanded = useCallback((id: string | number, expanded: boolean) => {
     const normalizedId = String(id)
@@ -160,6 +179,13 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
             </Tooltip>
             <span>Apenas favoritos</span>
           </label>
+          <FavoritesConsent
+            consent={consent}
+            requestOpen={requestConsent}
+            onAccept={acceptFavoriteConsent}
+            onDecline={declineFavoriteConsent}
+            onRequest={() => setRequestConsent(true)}
+          />
           <div className="result-count" aria-live="polite">
             {loadError || <><Badge variant="secondary">{filtered.length} {filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'}</Badge><span>{favoriteCount} favoritos</span></>}
           </div>
@@ -191,6 +217,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
                 key={itemId}
                 item={item}
                 isFavorite={favoriteIds.has(String(item.id))}
+                canSaveFavorites={consent === 'granted'}
                 initiallyExpanded={expandedIds.current.has(itemId)}
                 onToggleFavorite={toggleFavorite}
                 onExpandedChange={setExpanded}

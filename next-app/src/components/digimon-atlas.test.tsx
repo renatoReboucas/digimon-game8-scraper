@@ -6,6 +6,7 @@ import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Digimon } from '@/types/DigimonTypes'
 import { FAVORITES_STORAGE_KEY } from './lib/favorites'
+import { useFavoritesStore } from './lib/favorites-store'
 import DigimonAtlas from './digimon-atlas'
 import { renderWithTooltip as render } from '../test/test-utils'
 
@@ -23,13 +24,18 @@ function renderAtlas(items = digimons, loadError = '', onUrlUpdate = vi.fn()) {
   return { ...result, onUrlUpdate }
 }
 
-beforeEach(() => window.localStorage.clear())
+beforeEach(() => {
+  window.localStorage.clear()
+  useFavoritesStore.setState({ consent: 'unknown', favoriteIds: new Set<string>() })
+})
 
 describe('DigimonAtlas', () => {
   it('renderiza o catálogo com controles nomeados e sem violações axe', async () => {
     const { container } = renderAtlas()
 
     expect(screen.getByRole('heading', { level: 1, name: 'Digimon Atlas' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Salvar favoritos neste navegador?' })).toBeInTheDocument()
+    expect(screen.getByText(/Vercel Analytics registra navegação separadamente/)).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Pesquisar por nome' })).toBeInTheDocument()
     expect(screen.getByRole('switch', { name: 'Apenas favoritos' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Agumon' })).toBeInTheDocument()
@@ -62,6 +68,7 @@ describe('DigimonAtlas', () => {
     window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(['2']))
     renderAtlas()
 
+    await user.click(screen.getByRole('button', { name: 'Permitir salvamento' }))
     const favoritesSwitch = screen.getByRole('switch', { name: 'Apenas favoritos' })
     await user.click(favoritesSwitch)
     expect(favoritesSwitch).toHaveAttribute('aria-checked', 'true')
@@ -76,6 +83,43 @@ describe('DigimonAtlas', () => {
 
     await user.click(favoritesSwitch)
     expect(await screen.findByRole('heading', { level: 2, name: 'Agumon' })).toBeInTheDocument()
+  })
+
+  it('pede autorização ao favoritar sem consentimento e só salva após aceitar', async () => {
+    const user = userEvent.setup()
+    renderAtlas()
+
+    await user.click(screen.getByRole('button', { name: 'Agora não' }))
+    expect(useFavoritesStore.getState().consent).toBe('denied')
+    expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBeNull()
+
+    const favoriteButton = screen.getByRole('button', { name: 'Favoritar Agumon' })
+    expect(favoriteButton).toHaveClass('needs-consent')
+    await user.click(favoriteButton)
+    expect(screen.getByRole('heading', { level: 2, name: 'Salvar favoritos neste navegador?' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Permitir salvamento' }))
+
+    expect(screen.getByRole('button', { name: 'Desfavoritar Agumon' })).toHaveAttribute('aria-pressed', 'true')
+    expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe(JSON.stringify(['1']))
+  })
+
+  it('revoga a autorização e remove os favoritos persistidos', async () => {
+    const user = userEvent.setup()
+    renderAtlas()
+
+    await user.click(screen.getByRole('button', { name: 'Permitir salvamento' }))
+    await user.click(screen.getByRole('button', { name: 'Favoritar Agumon' }))
+    expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe(JSON.stringify(['1']))
+
+    await user.click(screen.getByText('Gerenciar'))
+    await user.click(screen.getByRole('button', { name: 'Revogar autorização' }))
+    expect(screen.getByText(/Revogar apaga os favoritos salvos neste navegador/)).toBeInTheDocument()
+    expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe(JSON.stringify(['1']))
+
+    await user.click(screen.getByRole('button', { name: 'Revogar e apagar' }))
+    expect(useFavoritesStore.getState().consent).toBe('denied')
+    expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBeNull()
+    expect(screen.getByRole('button', { name: 'Favoritar Agumon' })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('mostra estados vazios por catálogo e por pesquisa', async () => {

@@ -16,13 +16,14 @@ import { observeCardEntrance, useAnimeDisclosure } from './anime-animations'
 interface DigimonCardProps {
   item: Digimon
   isFavorite: boolean
+  canSaveFavorites?: boolean
   initiallyExpanded: boolean
   onToggleFavorite: (id: string | number) => void
   onExpandedChange: (id: string | number, expanded: boolean) => void
   onSelectParent?: (name: string) => void
 }
 
-function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
+function DigimonCardComponent({ item, isFavorite, canSaveFavorites = true, initiallyExpanded, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
   const [isExpanded, setIsExpanded] = useState(initiallyExpanded)
   const { panelRef, isPanelVisible } = useAnimeDisclosure(isExpanded, initiallyExpanded)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -102,7 +103,7 @@ function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFav
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className={`favorite-button${isFavorite ? ' is-favorite' : ''}`}
+                    className={`favorite-button${isFavorite ? ' is-favorite' : ''}${canSaveFavorites ? '' : ' needs-consent'}`}
                     variant="ghost"
                     type="button"
                     aria-pressed={isFavorite}
@@ -113,7 +114,9 @@ function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFav
                     <span>{isFavorite ? 'Desfavoritar' : 'Favoritar'}</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>{isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}</TooltipContent>
+                <TooltipContent>
+                  {isFavorite ? 'Remover dos favoritos' : canSaveFavorites ? 'Adicionar aos favoritos' : 'Autorize o salvamento para favoritar'}
+                </TooltipContent>
               </Tooltip>
           </div>
         </div>
