@@ -33,6 +33,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   const [query, setQuery] = useState(urlQuery)
   const deferredQuery = useDeferredValue(query)
   const [showFavorites, setShowFavorites] = useState<boolean>(false)
+  const [isSearchSticky, setIsSearchSticky] = useState(false)
   const deferredShowFavorites = useDeferredValue(showFavorites)
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds)
   const favoritesInitialized = useFavoritesStore((state) => state.initialized)
@@ -48,6 +49,13 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   const [pendingFavoriteId, setPendingFavoriteId] = useState<string | number | null>(null)
 
   useEffect(() => initializeFavorites(), [initializeFavorites])
+
+  useEffect(() => {
+    const updateSearchState = () => setIsSearchSticky(window.scrollY > 24)
+    updateSearchState()
+    window.addEventListener('scroll', updateSearchState, { passive: true })
+    return () => window.removeEventListener('scroll', updateSearchState)
+  }, [])
 
   useEffect(() => {
     setQuery(urlQuery)
@@ -135,36 +143,37 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
         <header className="hero">
           <p className="eyebrow">Digimon Story Time Stranger</p>
           <h1>Digimon Atlas</h1>
-          <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
-          <div className="search-box">
-            <label className="sr-only" htmlFor="search-input">Pesquisar por nome</label>
-            <Search aria-hidden="true" size={18} strokeWidth={1.8} />
-            <Input
-              className="search-input"
-              id="search-input"
-              type="text"
-              placeholder="Pesquisar por nome..."
-              autoComplete="off"
-              value={query}
-              onChange={(event) => updateQuery(event.target.value)}
-            />
-            {query && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="search-clear"
-                    variant="ghost"
-                    size="icon"
-                    type="button"
-                    aria-label="Limpar pesquisa"
-                    onClick={() => updateQuery('')}
-                  >
-                    <X aria-hidden="true" size={16} strokeWidth={2} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Limpar pesquisa</TooltipContent>
-              </Tooltip>
-            )}
+          <div className={`search-dock${isSearchSticky ? ' is-sticky' : ''}`}>
+            <div className="search-box">
+              <label className="sr-only" htmlFor="search-input">Pesquisar por nome</label>
+              <Search aria-hidden="true" size={21} strokeWidth={1.8} />
+              <Input
+                className="search-input"
+                id="search-input"
+                type="text"
+                placeholder="Pesquisar Digimon..."
+                autoComplete="off"
+                value={query}
+                onChange={(event) => updateQuery(event.target.value)}
+              />
+              {query && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="search-clear"
+                      variant="ghost"
+                      size="icon"
+                      type="button"
+                      aria-label="Limpar pesquisa"
+                      onClick={() => updateQuery('')}
+                    >
+                      <X aria-hidden="true" size={16} strokeWidth={2} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Limpar pesquisa</TooltipContent>
+                </Tooltip>
+              )}
+            </div>
           </div>
           <label className="favorites-filter" htmlFor="favorites-toggle">
             <Tooltip>
@@ -180,6 +189,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
             </Tooltip>
             <span>Apenas favoritos</span>
           </label>
+          <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
           <FavoritesConsent
             initialized={favoritesInitialized}
             consent={consent}
