@@ -1354,13 +1354,46 @@ body {
   .digimon-card { transition: none; }
 }
 
+/* Cada card interno ocupa uma linha inteira quando a coluna não comporta dois. */
+.evolution-details .related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  align-items: start;
+  gap: 0.75rem;
+  overflow: visible;
+}
+
+.evolution-details .related-item {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.evolution-details .related-header {
+  min-width: 0;
+}
+
+.evolution-details .related-name {
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+@media (max-width: 640px) {
+  .evolution-details .related-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Cards de evolução preservam uma largura legível e não comprimem os nomes. */
 .evolution-details {
   min-width: 0;
 }
 
-.evolution-details > .evolution-column,
-.evolution-details > section {
+.evolution-details 
+ .evolution-column,
+.evolution-details 
+ section {
   min-width: 0;
 }
 
