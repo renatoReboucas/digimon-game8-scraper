@@ -44,32 +44,33 @@ function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFav
     >
       <div className="digimon-accordion-item">
         <div className="card-header">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="card-header-trigger accordion-trigger"
-                variant="ghost"
-                type="button"
-                aria-expanded={isExpanded}
-                aria-label={`${isExpanded ? 'Recolher' : 'Expandir'} evolucoes de ${item.name ?? 'Digimon'}`}
-                onClick={toggleExpanded}
-              >
-                  <DigimonImage item={item} className="main-image" />
-                  <div className="identity">
-                    <Badge variant="outline" className="card-index">No. {item.number}</Badge>
-                    <div className="title-row">
-                      <h2>{item.name}</h2>
-                    </div>
-                    <div className="tags">
-                      {item.attribute && <Badge variant="secondary">{item.attribute}</Badge>}
-                      {item.generation && <Badge variant="secondary">{item.generation}</Badge>}
-                    </div>
-                  </div>
-                  <ChevronDown className={`accordion-chevron${isExpanded ? ' is-rotated' : ''}`} aria-hidden="true" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{isExpanded ? 'Recolher' : 'Expandir'} evoluções de {item.name ?? 'Digimon'}</TooltipContent>
-          </Tooltip>
+          <DigimonImage item={item} className="main-image" />
+          <div className="identity">
+            {item.number != null && <Badge variant="outline" className="card-index">No. {item.number}</Badge>}
+            <div className="title-row">
+              <h2>{item.name}</h2>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="card-expand-button accordion-trigger"
+                    variant="ghost"
+                    size="icon"
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-label={`${isExpanded ? 'Recolher' : 'Expandir'} evoluções de ${item.name ?? 'Digimon'}`}
+                    onClick={toggleExpanded}
+                  >
+                    <ChevronDown className={`accordion-chevron${isExpanded ? ' is-rotated' : ''}`} aria-hidden="true" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{isExpanded ? 'Recolher' : 'Expandir'} evoluções de {item.name ?? 'Digimon'}</TooltipContent>
+              </Tooltip>
+            </div>
+            <div className="tags">
+              {item.attribute && <Badge variant="secondary">{item.attribute}</Badge>}
+              {item.generation && <Badge variant="secondary">{item.generation}</Badge>}
+            </div>
+          </div>
           <div className="card-actions">
               <Tooltip>
                 <TooltipTrigger asChild>

@@ -106,7 +106,7 @@ describe('DigimonCard', () => {
       </DigimonProvider>,
     )
 
-    const expand = getByRole('button', { name: 'Expandir evolucoes de Agumon' })
+    const expand = getByRole('button', { name: 'Expandir evoluções de Agumon' })
     fireEvent.click(getByRole('button', { name: 'Favoritar Agumon' }))
     expect(onToggleFavorite).toHaveBeenCalledWith('1')
     expect(expand).toHaveAttribute('aria-expanded', 'false')
@@ -124,7 +124,7 @@ describe('DigimonCard', () => {
 
   it('inicia expandido, recolhe pelo botão e também alterna ao clicar na área do artigo', () => {
     const onExpandedChange = vi.fn()
-    const { getByRole } = render(
+    const { getByRole, container } = render(
       <DigimonCard
         item={{ id: '3', name: 'Patamon' }}
         isFavorite
@@ -134,14 +134,15 @@ describe('DigimonCard', () => {
       />,
     )
 
-    const expand = getByRole('button', { name: 'Recolher evolucoes de Patamon' })
+    const expand = getByRole('button', { name: /Recolher evoluções.*Patamon/ })
     expect(expand).toHaveAttribute('aria-expanded', 'true')
+    expect(container.querySelector('.card-index')).not.toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Filtrar Patamon na barra de busca' }))
     fireEvent.click(expand)
     expect(onExpandedChange).toHaveBeenCalledWith('3', false)
 
     fireEvent.click(getByRole('article'))
-    expect(getByRole('button', { name: 'Recolher evolucoes de Patamon' })).toHaveAttribute('aria-expanded', 'true')
+    expect(getByRole('button', { name: /Recolher evoluções.*Patamon/ })).toHaveAttribute('aria-expanded', 'true')
   })
 })
 

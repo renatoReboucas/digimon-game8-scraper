@@ -55,8 +55,8 @@ describe('RootLayout', () => {
 
     expect(document.documentElement).toHaveAttribute('lang', 'pt-BR')
     expect(screen.getByText('Conteúdo da página')).toBeInTheDocument()
-    expect(metadata.title).toBe('Digimon Atlas')
-    expect(metadata.description).toContain('Digimon')
+    expect(metadata.title).toBe('Digimon Atlas | Catálogo de Digimon e evoluções')
+    expect(metadata.description).toBe('Pesquise o catálogo de Digimon, consulte atributos e explore evoluções e de-evoluções.')
   })
 })
 

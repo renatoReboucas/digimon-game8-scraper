@@ -152,7 +152,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
             {loadError || <><Badge variant="secondary">{filtered.length} {filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'}</Badge><span>{favoriteCount} favoritos</span></>}
           </div>
         </header>
-        <section className="digimon-list" aria-live="polite">
+        <section className="digimon-list" aria-busy={isSearchPending}>
           {isSearchPending && !loadError && Array.from({ length: 4 }, (_, index) => (
             <Card className="loading-card search-loading-card" key={`search-skeleton-${index}`} aria-hidden="true">
               <div className="skeleton-card-heading">

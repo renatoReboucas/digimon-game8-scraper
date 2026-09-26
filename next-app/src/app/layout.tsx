@@ -4,8 +4,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import './globals.css'
 
 export const metadata = {
-  title: 'Digimon Atlas',
-  description: 'Catalogo de Digimon e suas linhas evolutivas.',
+  title: 'Digimon Atlas | Catálogo de Digimon e evoluções',
+  description: 'Pesquise o catálogo de Digimon, consulte atributos e explore evoluções e de-evoluções.',
   icons: {
     icon: '/favicon.ico',
   },

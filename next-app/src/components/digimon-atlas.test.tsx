@@ -34,6 +34,9 @@ describe('DigimonAtlas', () => {
     expect(screen.getByRole('switch', { name: 'Apenas favoritos' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Agumon' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Gabumon' })).toBeInTheDocument()
+    expect(container.querySelector('.digimon-list')).toHaveAttribute('aria-busy', 'false')
+    expect(container.querySelector('.digimon-list')).not.toHaveAttribute('aria-live')
+    expect(container.querySelector('.result-count')).toHaveAttribute('aria-live', 'polite')
 
     const results = await axe.run(container, { rules: { 'color-contrast': { enabled: false } } })
     expect(results.violations.map(({ id, help }) => ({ id, help }))).toEqual([])
