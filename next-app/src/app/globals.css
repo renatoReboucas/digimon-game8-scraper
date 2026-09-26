@@ -793,9 +793,8 @@
 }
 
 .related-summary {
-  display: flex;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 0;
   align-items: center;
   gap: 0.55rem;
   padding: 0;
@@ -828,6 +827,7 @@
   min-width: 0;
   flex: 1 1 auto;
   overflow: visible;
+  overflow-wrap: anywhere;
 }
 
 .related-quick-tags {
@@ -1309,7 +1309,12 @@ body {
 .related-quick-tags,
 .related-quick-tags .badge,
 .metadata-value {
-  white-space: nowrap;
+  white-space: normal;
+}
+
+.related-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .parent-metadata-grid {
