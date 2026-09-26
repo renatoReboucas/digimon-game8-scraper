@@ -73,7 +73,6 @@ export function RelatedItem({ item, onSelectParent, isFavorite, canSaveFavorites
       .map((evolution) => typeof evolution === 'string' ? { name: evolution } : evolution)
     : []
 
-  const level = digimon.level || digimon.generation || ''
   const description = digimon.description || digimon.desc || digimon.flavorText || ''
   const releaseDate = digimon.releaseDate || digimon.release_date || ''
 
@@ -100,8 +99,6 @@ export function RelatedItem({ item, onSelectParent, isFavorite, canSaveFavorites
                 <span className="related-name">{digimon.name}</span>
                 <span className="related-quick-tags">
                   {hasValue(digimon.number) && <Badge variant="outline">No. {digimon.number}</Badge>}
-                  {hasValue(level) && <Badge variant="secondary">{level}</Badge>}
-                  {hasValue(digimon.attribute) && <Badge variant="secondary">{digimon.attribute}</Badge>}
                 </span>
               </span>
             </button>
