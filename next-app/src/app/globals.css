@@ -798,13 +798,13 @@
   flex: 1 1 0;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.25rem;
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
-  text-align: center;
+  text-align: left;
   cursor: pointer;
 }
 
@@ -831,7 +831,7 @@
   min-width: 0;
   flex: 0 1 auto;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   overflow: visible;
   overflow-wrap: anywhere;
 }
