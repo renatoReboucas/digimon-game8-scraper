@@ -174,7 +174,8 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
                 </Tooltip>
               )}
             </div>
-            <label className="favorites-filter" htmlFor="favorites-toggle">
+          </div>
+          <label className="favorites-filter" htmlFor="favorites-toggle">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Switch
@@ -186,9 +187,8 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
               </TooltipTrigger>
               <TooltipContent>Mostrar apenas favoritos</TooltipContent>
             </Tooltip>
-              <span>Apenas favoritos</span>
-            </label>
-          </div>
+            <span>Apenas favoritos</span>
+          </label>
           <p className="subtitle">Pesquise a linha evolutiva completa do seu Digimon.</p>
           <FavoritesConsent
             initialized={favoritesInitialized}
