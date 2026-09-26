@@ -1209,6 +1209,48 @@ body {
   }
 }
 
+@media (min-width: 1400px) {
+  .digimon-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .evolution-details {
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+    gap: 0.9rem;
+    padding-inline: 1rem;
+  }
+
+  .related-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .related-image {
+    width: 3.25rem;
+    height: 3.25rem;
+    flex-basis: 3.25rem;
+  }
+}
+
+.tags,
+.related-quick-tags,
+.related-badges-list {
+  min-width: 0;
+}
+
+.tags .badge,
+.related-quick-tags .badge,
+.related-field-badge,
+.related-sub-badge {
+  width: max-content;
+  max-width: 100%;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .digimon-card { transition: none; }
 }
