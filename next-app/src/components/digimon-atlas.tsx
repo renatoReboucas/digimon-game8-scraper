@@ -16,6 +16,7 @@ import { DigimonCard } from './digimon-card'
 import { DigimonProvider } from './digimon-context'
 import { readFavorites, saveFavorites } from './lib/favorites'
 import { ScrollToTop } from './scroll-to-top'
+import { animatePageScroll } from './anime-animations'
 
 interface DigimonAtlasProps {
   digimons: Digimon[]
@@ -31,8 +32,10 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
   const [query, setQuery] = useState(urlQuery)
   const deferredQuery = useDeferredValue(query)
   const [showFavorites, setShowFavorites] = useState<boolean>(false)
+  const deferredShowFavorites = useDeferredValue(showFavorites)
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set<string>())
   const expandedIds = useRef<Set<string>>(new Set<string>())
+  const scrollAnimation = useRef<ReturnType<typeof animatePageScroll>>(null)
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -43,13 +46,19 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
     setQuery(urlQuery)
   }, [urlQuery])
 
+  useEffect(() => () => {
+    scrollAnimation.current?.revert()
+  }, [])
+
   const filtered = useMemo(() => filterDigimons(digimons, {
     query: deferredQuery,
-    showFavorites,
+    showFavorites: deferredShowFavorites,
     favoriteIds,
     selectedParentId,
-  }), [digimons, favoriteIds, deferredQuery, selectedParentId, showFavorites])
+  }), [digimons, favoriteIds, deferredQuery, selectedParentId, deferredShowFavorites])
   const isSearchPending = query !== deferredQuery
+  const isFilterPending = showFavorites !== deferredShowFavorites
+  const isListPending = isSearchPending || isFilterPending
 
   function updateQuery(value: string) {
     setQuery(value)
@@ -81,8 +90,11 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
       requestAnimationFrame(() => {
         const input = document.getElementById('search-input')
         if (input) {
-          input.focus()
-          input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          input.focus({ preventScroll: true })
+          const top = input.getBoundingClientRect().top + window.scrollY
+            - (window.innerHeight - input.offsetHeight) / 2
+          scrollAnimation.current?.revert()
+          scrollAnimation.current = animatePageScroll(Math.max(0, top))
         }
       })
     }
@@ -152,8 +164,8 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
             {loadError || <><Badge variant="secondary">{filtered.length} {filtered.length === 1 ? 'Digimon encontrado' : 'Digimons encontrados'}</Badge><span>{favoriteCount} favoritos</span></>}
           </div>
         </header>
-        <section className="digimon-list" aria-busy={isSearchPending}>
-          {isSearchPending && !loadError && Array.from({ length: 4 }, (_, index) => (
+        <section className="digimon-list" aria-busy={isListPending}>
+          {isListPending && !loadError && Array.from({ length: 4 }, (_, index) => (
             <Card className="loading-card search-loading-card" key={`search-skeleton-${index}`} aria-hidden="true">
               <div className="skeleton-card-heading">
                 <Skeleton className="skeleton-image" />
@@ -170,8 +182,8 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
               </div>
             </Card>
           ))}
-          {!isSearchPending && !loadError && !filtered.length ? <p className="page-empty">{emptyMessage}</p> : null}
-          {!isSearchPending && !loadError && filtered.map((item) => {
+          {!isListPending && !loadError && !filtered.length ? <p className="page-empty">{emptyMessage}</p> : null}
+          {!isListPending && !loadError && filtered.map((item) => {
             const itemId = String(item.id ?? item.url ?? item.name ?? 'item')
 
             return (

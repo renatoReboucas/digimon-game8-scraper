@@ -64,10 +64,12 @@ describe('DigimonAtlas', () => {
 
     const favoritesSwitch = screen.getByRole('switch', { name: 'Apenas favoritos' })
     await user.click(favoritesSwitch)
+    expect(favoritesSwitch).toHaveAttribute('aria-checked', 'true')
     expect(await screen.findByRole('heading', { level: 2, name: 'Gabumon' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { level: 2, name: 'Agumon' })).not.toBeInTheDocument()
 
     await user.click(favoritesSwitch)
+    expect(favoritesSwitch).toHaveAttribute('aria-checked', 'false')
     await user.click(screen.getByRole('button', { name: 'Favoritar Agumon' }))
     expect(window.localStorage.getItem(FAVORITES_STORAGE_KEY)).toBe(JSON.stringify(['2', '1']))
     expect(screen.getByRole('button', { name: 'Desfavoritar Agumon' })).toHaveAttribute('aria-pressed', 'true')
@@ -109,6 +111,7 @@ describe('DigimonAtlas', () => {
 
   it('filtra pelo botão de nome do card e move o foco para a busca', async () => {
     const user = userEvent.setup()
+    vi.stubGlobal('scrollTo', vi.fn())
     renderAtlas()
 
     await user.click(screen.getByRole('button', { name: 'Filtrar Agumon na barra de busca' }))

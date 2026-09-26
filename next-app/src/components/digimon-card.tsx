@@ -1,7 +1,7 @@
 'use client'
 
 import { ChevronDown, Funnel, Star } from 'lucide-react'
-import { memo, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import type { Digimon } from '@/types/DigimonTypes'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -11,6 +11,7 @@ import { DigimonImage } from './digimon-image'
 import { DigimonMetadataGrid } from './digimon-metadata-grid'
 import { EvolutionSection } from './evolution-section'
 import { Link } from './link'
+import { observeCardEntrance, useAnimeDisclosure } from './anime-animations'
 
 interface DigimonCardProps {
   item: Digimon
@@ -23,8 +24,16 @@ interface DigimonCardProps {
 
 function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
   const [isExpanded, setIsExpanded] = useState(initiallyExpanded)
+  const { panelRef, isPanelVisible } = useAnimeDisclosure(isExpanded, initiallyExpanded)
+  const contentRef = useRef<HTMLDivElement>(null)
   const cardId = String(item.id ?? item.url ?? item.name ?? '')
   const relations = item.Digivolutions ?? { evolutions: [], deEvolutions: [] }
+
+  useEffect(() => {
+    const card = contentRef.current?.closest('.digimon-card')
+    if (!(card instanceof HTMLElement)) return
+    return observeCardEntrance(card)
+  }, [])
 
   function toggleExpanded() {
     const nextExpanded = !isExpanded
@@ -42,7 +51,7 @@ function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFav
         toggleExpanded()
       }}
     >
-      <div className="digimon-accordion-item">
+      <div className="digimon-accordion-item" ref={contentRef}>
         <div className="card-header">
           <DigimonImage item={item} className="main-image" />
           <div className="identity">
@@ -114,8 +123,13 @@ function DigimonCardComponent({ item, isFavorite, initiallyExpanded, onToggleFav
             <Link item={item} />
           </div>
         </div>
-        {isExpanded && (
-          <div className="evolution-details">
+        {isPanelVisible && (
+          <div
+            className="evolution-details"
+            ref={panelRef}
+            aria-hidden={!isExpanded}
+            inert={!isExpanded}
+          >
             <EvolutionSection title="Evolutions" items={relations.evolutions ?? []} onSelectParent={onSelectParent} />
             <div className="divider" role="separator" />
             <EvolutionSection title="De-evolutions" items={relations.deEvolutions ?? []} onSelectParent={onSelectParent} />

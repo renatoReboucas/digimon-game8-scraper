@@ -144,6 +144,6 @@ describe('ScrollToTop', () => {
     const button = screen.getByRole('button', { name: 'Rolar para o começo' })
     expect(button).toHaveClass('is-visible')
     fireEvent.click(button)
-    expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' })
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0 })
   })
 })

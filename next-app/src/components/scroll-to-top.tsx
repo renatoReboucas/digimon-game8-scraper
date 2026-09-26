@@ -1,12 +1,15 @@
 'use client'
 
 import { ChevronUp } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { JSAnimation } from 'animejs'
 import { Button } from './ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
+import { animatePageScroll } from './anime-animations'
 
 export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState<boolean>(false)
+  const scrollAnimation = useRef<JSAnimation | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,14 +19,15 @@ export function ScrollToTop() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll()
 
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      scrollAnimation.current?.revert()
+    }
   }, [])
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
+    scrollAnimation.current?.revert()
+    scrollAnimation.current = animatePageScroll(0)
   }
 
   return (

@@ -10,6 +10,7 @@ import { DigimonImage } from './digimon-image'
 import { DigimonMetadataGrid, hasValue } from './digimon-metadata-grid'
 import { useDigimonLookup } from './digimon-context'
 import { Link } from './link'
+import { useAnimeDisclosure } from './anime-animations'
 
 const KNOWN_KEYS = new Set<string>([
   'id',
@@ -45,6 +46,7 @@ interface RelatedItemProps {
 
 export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const { panelRef, isPanelVisible } = useAnimeDisclosure(isExpanded)
   const contentId = useId()
   const { lookupDigimon } = useDigimonLookup()
 
@@ -150,8 +152,11 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
 
       <div
         id={contentId}
+        ref={panelRef}
         className={`related-expand-wrapper${isExpanded ? ' is-expanded' : ''}`}
         aria-hidden={!isExpanded}
+        hidden={!isPanelVisible}
+        inert={!isExpanded}
       >
         <div className="related-expand-inner">
           <div className="related-expanded-details">
