@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronDown, Filter } from 'lucide-react'
+import { ChevronDown, Filter, Star } from 'lucide-react'
 import { useId, useState } from 'react'
 import type { Digimon, DigimonEvolutionLink, DigimonEvolutionReference, DigimonLookupInput } from '@/types/DigimonTypes'
 import { Badge } from './ui/badge'
@@ -42,9 +42,12 @@ const KNOWN_KEYS = new Set<string>([
 interface RelatedItemProps {
   item: DigimonEvolutionReference
   onSelectParent?: ((name: string) => void) | undefined
+  isFavorite: (id: string | number) => boolean
+  canSaveFavorites: boolean
+  onToggleFavorite: (id: string | number) => void
 }
 
-export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
+export function RelatedItem({ item, onSelectParent, isFavorite, canSaveFavorites, onToggleFavorite }: RelatedItemProps) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
   const { panelRef, isPanelVisible } = useAnimeDisclosure(isExpanded)
   const contentId = useId()
@@ -53,6 +56,8 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
   const reference = typeof item === 'string' ? { name: item } : item
   const matched = lookupDigimon(reference satisfies DigimonLookupInput)
   const digimon: Digimon = matched ? { ...reference, ...matched } : reference
+  const digimonId = String(digimon.id ?? digimon.url ?? digimon.name ?? '')
+  const favorite = isFavorite(digimonId)
 
   const toggleExpanded = () => {
     setIsExpanded((prev) => !prev)
@@ -122,6 +127,27 @@ export function RelatedItem({ item, onSelectParent }: RelatedItemProps) {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Filtrar pelo card de {digimon.name}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className={`favorite-button related-favorite-button${favorite ? ' is-favorite' : ''}${canSaveFavorites ? '' : ' needs-consent'}`}
+                variant="ghost"
+                size="icon"
+                type="button"
+                aria-pressed={favorite}
+                aria-label={`${favorite ? 'Desfavoritar' : 'Favoritar'} ${digimon.name}`}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onToggleFavorite(digimonId)
+                }}
+              >
+                <Star aria-hidden="true" fill={favorite ? 'currentColor' : 'none'} strokeWidth={1.8} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {favorite ? 'Remover dos favoritos' : canSaveFavorites ? 'Adicionar aos favoritos' : 'Autorize o salvamento para favoritar'}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
