@@ -796,15 +796,15 @@
   display: flex;
   min-width: 0;
   flex: 1 1 0;
-  flex-direction: row;
-  justify-content: flex-start;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.25rem;
   padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -829,9 +829,9 @@
 .related-content {
   display: flex;
   min-width: 5.5rem;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   overflow: visible;
   overflow-wrap: anywhere;
 }
