@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, X } from 'lucide-react'
+import { GitBranch, Search, X } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import type { Digimon } from '@/types/DigimonTypes'
@@ -141,6 +141,16 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
     <DigimonProvider digimons={digimons}>
       <main className="shell">
         <header className="hero">
+          <a
+            className="github-link"
+            href="https://github.com/renatoReboucas/digimon-game8-scraper"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Ver o projeto no GitHub"
+          >
+            <GitBranch aria-hidden="true" />
+            <span>GitHub</span>
+          </a>
           <p className="eyebrow">Digimon Story Time Stranger</p>
           <h1>Digimon Atlas</h1>
           <div className={`search-dock${isSearchSticky ? ' is-sticky' : ''}`}>
