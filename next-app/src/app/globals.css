@@ -867,6 +867,7 @@
   flex: 0 0 auto;
   align-items: center;
   gap: 0.35rem;
+  margin-left: auto;
 }
 
 .parent-filter-button,
@@ -1331,10 +1332,15 @@ body {
 .tags,
 .related-quick-tags {
   min-width: max-content;
+  width: max-content;
+  flex: 0 0 auto;
 }
 
 .tags .badge,
 .related-quick-tags .badge {
+  display: inline-flex;
+  width: max-content;
+  min-width: max-content;
   white-space: nowrap;
   word-break: keep-all;
   overflow-wrap: normal;
