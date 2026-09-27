@@ -16,6 +16,7 @@ import { observeCardEntrance, useAnimeDisclosure } from './anime-animations'
 interface DigimonCardProps {
   item: Digimon
   isFavorite: boolean
+  favoriteIds: ReadonlySet<string>
   canSaveFavorites?: boolean
   initiallyExpanded: boolean
   imagePriority?: boolean
@@ -24,7 +25,7 @@ interface DigimonCardProps {
   onSelectParent?: (name: string) => void
 }
 
-function DigimonCardComponent({ item, isFavorite, canSaveFavorites = true, initiallyExpanded, imagePriority = false, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
+function DigimonCardComponent({ item, isFavorite, favoriteIds, canSaveFavorites = true, initiallyExpanded, imagePriority = false, onToggleFavorite, onExpandedChange, onSelectParent }: DigimonCardProps) {
   const [isExpanded, setIsExpanded] = useState(initiallyExpanded)
   const { panelRef, isPanelVisible } = useAnimeDisclosure(isExpanded, initiallyExpanded)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -134,9 +135,23 @@ function DigimonCardComponent({ item, isFavorite, canSaveFavorites = true, initi
             aria-hidden={!isExpanded}
             inert={!isExpanded}
           >
-            <EvolutionSection title="Evolutions" items={relations.evolutions ?? []} onSelectParent={onSelectParent} />
+            <EvolutionSection
+              title="Evolutions"
+              items={relations.evolutions ?? []}
+              onSelectParent={onSelectParent}
+              isFavorite={(id) => favoriteIds.has(String(id))}
+              canSaveFavorites={canSaveFavorites}
+              onToggleFavorite={onToggleFavorite}
+            />
             <div className="divider" role="separator" />
-            <EvolutionSection title="De-evolutions" items={relations.deEvolutions ?? []} onSelectParent={onSelectParent} />
+            <EvolutionSection
+              title="De-evolutions"
+              items={relations.deEvolutions ?? []}
+              onSelectParent={onSelectParent}
+              isFavorite={(id) => favoriteIds.has(String(id))}
+              canSaveFavorites={canSaveFavorites}
+              onToggleFavorite={onToggleFavorite}
+            />
           </div>
         )}
       </div>
