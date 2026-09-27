@@ -7,7 +7,7 @@ import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip'
 import { DigimonImage } from './digimon-image'
-import { DigimonMetadataGrid, hasValue } from './digimon-metadata-grid'
+import {  hasValue } from './digimon-metadata-grid'
 import { useDigimonLookup } from './digimon-context'
 import { Link } from './link'
 import { useAnimeDisclosure } from './anime-animations'
@@ -189,7 +189,7 @@ export function RelatedItem({ item, onSelectParent, isFavorite, canSaveFavorites
               </div>
             )}
 
-            <DigimonMetadataGrid digimon={digimon} />
+            {/* <DigimonMetadataGrid digimon={digimon} /> */}
 
             {hasValue(digimon.fields) && (
               <div className="related-detail-section">
