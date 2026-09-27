@@ -7,9 +7,12 @@ interface EvolutionSectionProps {
   title: string
   items: DigimonEvolutionReference[]
   onSelectParent?: ((name: string) => void) | undefined
+  isFavorite: (id: string | number) => boolean
+  canSaveFavorites: boolean
+  onToggleFavorite: (id: string | number) => void
 }
 
-export function EvolutionSection({ title, items, onSelectParent }: EvolutionSectionProps) {
+export function EvolutionSection({ title, items, onSelectParent, isFavorite, canSaveFavorites, onToggleFavorite }: EvolutionSectionProps) {
   return (
     <section className="evolution-section">
       <h3>{title}</h3>
@@ -25,6 +28,9 @@ export function EvolutionSection({ title, items, onSelectParent }: EvolutionSect
                 key={`${key}-${index}`}
                 item={item}
                 onSelectParent={onSelectParent}
+                isFavorite={isFavorite}
+                canSaveFavorites={canSaveFavorites}
+                onToggleFavorite={onToggleFavorite}
               />
             )
           })}

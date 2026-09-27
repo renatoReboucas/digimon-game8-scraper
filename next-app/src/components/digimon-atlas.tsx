@@ -230,6 +230,7 @@ export default function DigimonAtlas({ digimons, loadError = '' }: DigimonAtlasP
                 item={item}
                 imagePriority={index < 4}
                 isFavorite={favoriteIds.has(String(item.id))}
+                favoriteIds={favoriteIds}
                 canSaveFavorites={consent === 'granted'}
                 initiallyExpanded={expandedIds.current.has(itemId)}
                 onToggleFavorite={toggleFavorite}
